@@ -1,0 +1,23 @@
+.bubble {
+
+	position: fixed;
+
+	text-align: center;
+
+	align-items: center;
+
+	background-image: url('bubble.png');
+
+	background-size: 100%;
+
+}
+
+
+
+.debug {
+
+	position: fixed;
+
+	background-color: red;
+
+}
