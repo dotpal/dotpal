@@ -3,7 +3,7 @@
 # Backend start up instruction
 
 ## Running on local python environment
-If you already have python installed, simply go to the directly `/backend` with the following command and run `app.py`. 
+If you already have python installed, simply go to the directly `/backend` with the following commands and then run `app.py`. 
 
 ```bash
 cd backend
