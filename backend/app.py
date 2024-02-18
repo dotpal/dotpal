@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import uvicorn
-from .schemas import User
+from schemas import User
 from datetime import datetime
 
 app = FastAPI(docs_url="/api/docs", redoc_url="/api/redoc")
@@ -33,7 +33,7 @@ user_3_data = {
 user_1, user_2, user_3 = User(**user_1_data), User(**user_2_data), User(**user_3_data)
 
 
-@app.get("/users", response_model=list[User])
+@app.get("/users")
 async def read_users():
     return [user_1, user_2, user_3]
 
