@@ -38,6 +38,6 @@ Note that first you need to get the server running. (i.e., execute `app.py`)
 
 ![](images_readme/3.png)
 
-4. Call the endpoint by clicking `Execute` button, and then you will see the response from it.(JSON)
+4. Call the endpoint by clicking `Execute` button, and then you will see the responses from it.(JSON)
    
 ![](images_readme/4.png)
