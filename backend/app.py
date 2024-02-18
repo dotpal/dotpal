@@ -1,9 +1,12 @@
 from fastapi import FastAPI
 import uvicorn
-from .schemas import User, Coordinate
+from .schemas import User
 from datetime import datetime
 
-user_1 = {
+app = FastAPI(docs_url="/api/docs", redoc_url="/api/redoc")
+
+
+user_1_data = {
     "username": "user_1",
     "email": "user1@user.email",
     "original_id": "npm-rendezvous",
@@ -11,7 +14,7 @@ user_1 = {
     "created_at": datetime.now(),
 }
 
-user_2 = {
+user_2_data = {
     "username": "user_2",
     "email": "ericCartman@eric.us",
     "original_id": "fatAss752",
@@ -19,7 +22,7 @@ user_2 = {
     "created_at": datetime.now(),
 }
 
-user_3 = {
+user_3_data = {
     "username": "user_3",
     "email": "cto@gmail.com",
     "original_id": "Chris Chang",
@@ -27,12 +30,12 @@ user_3 = {
     "created_at": datetime.now(),
 }
 
-app = FastAPI(docs_url="/api/docs", redoc_url="/api/redoc")
+user_1, user_2, user_3 = User(**user_1_data), User(**user_2_data), User(**user_3_data)
 
 
-@app.get("/")
-async def read_root():
-    return {"Hello": "from FastAPI!"}
+@app.get("/users", response_model=list[User])
+async def read_users():
+    return [user_1, user_2, user_3]
 
 
 if __name__ == "__main__":
