@@ -22,4 +22,4 @@ Access link:
 
 <a>http://0.0.0.0:8000/api/docs</a>
 
-Not that first you need the server running. (i.e., after running `app.py`)
+Not that first you need to get the server running. (i.e., after running `app.py`)
