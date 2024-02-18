@@ -22,7 +22,7 @@ Access link:
 
 <a>http://0.0.0.0:8000/api/docs</a>
 
-Not that first you need to get the server running. (i.e., after running `app.py`)
+Note that first you need to get the server running. (i.e., after running `app.py`)
 
 ## Trying endpoints on Browser
 
