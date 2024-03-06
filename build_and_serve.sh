@@ -1,1 +1,1 @@
-./build.sh && node server.js
+./build.sh && node build/server.js

@@ -1,1 +1,1 @@
-echo src/client.js | entr -rz ./build_and_serve.sh
+/bin/ls src/* | entr -rz ./build_and_serve.sh

@@ -23,22 +23,6 @@ const debug = {}
 	debug.clear = function() {
 	}
 }
-const logic = {}
-{
-	const is = function(v) {
-		return v !== undefined
-	}
-	logic.is = is
-	const and = function(a, b) {
-		if (is(a) && is(b)) return b
-	}
-	logic.and = and
-	const or = function(a, b) {
-		if (is(a)) return a
-		else if (is(b)) return b
-	}
-	logic.or = or
-}
 const spring = {}
 {
 	const cos = Math.cos
@@ -69,6 +53,7 @@ const spring = {}
 // thanks to trey
 const zeros = {}
 {
+	IMPORT(logic.js)
 	const sqrt = Math.sqrt
 	const cbrt = Math.cbrt
 	const or = logic.or
@@ -257,6 +242,7 @@ const camera = {}
 }
 const bubble = {}
 {
+	IMPORT(logic.js)
 	const random = Math.random
 	const pow = Math.pow
 	const pi = Math.PI
@@ -293,6 +279,7 @@ const bubble = {}
 			bubble_element.style.height = 2*r*project_scale + 'px'
 			bubble_element.style.lineHeight = 2*r*project_scale + 'px'
 			bubble_element.style.fontSize = 0.3*r*project_scale + 'px'
+			bubble_element.style['background-image'] = 'url(IMPORT(bubble.png))' // this is probably using a lot of memory
 		}
 		self.present = present
 		self.get_geometry = function() {
@@ -568,66 +555,14 @@ const bubble = {}
 		}
 	}
 }
-const signal = {}
 {
-	signal.create = function() {
-		const self = {}
-		const events = []
-		self.connect = function(callback) {
-			events.push(callback)
-			return function() {
-				events.splice(events.indexOf(callback), 1)
-			}
-		}
-		self.send = function(values) {
-			for (const i in events) {
-				events[i](values)
-			}
-		}
-		return self
-	}
-}
-const network = {}
-{
-	network.create = function(port) {
-		const self = {}
-		self.open = signal.create()
-		self.close = signal.create()
-		self.error = signal.create()
-		const socket = new WebSocket('ws://localhost:' + port)
-		// these are needed to automatically call the bindings open close and error
-		socket.onopen = self.open.send
-		socket.onclose = self.close.send
-		socket.onerror = self.error.send
-		const listeners = {}
-		self.receive = function(key) {
-			if (listeners[key]) {
-				return listeners[key]
-			}
-			return listeners[key] = signal.create()
-		}
-		socket.message = function(packet) {
-			const [key, ...values] = JSON.parse(packet.data)
-			if (listeners[key]) {
-				listeners[key].send(values)
-			}
-			else {
-				console.log('no key: ' + key)
-			}
-		}
-		self.send = function(values) {
-			socket.send(JSON.stringify(values))
-		}
-		return self
-	}
-}
-{
+	IMPORT(network.js)
+	IMPORT(signal.js)
 	const random = Math.random
 	const sqrt = Math.sqrt
 	const the_network = network.create(3565)
 	the_network.open.connect(function() {
 		console.log('connected to network')
-		the_network.send('lmfao')
 		const receive_cookie = signal.create()
 		const login_form = document.createElement('form')
 		login_form.setAttribute('id', 'login_form')
@@ -667,7 +602,7 @@ const network = {}
 				receive_cookie.send([secret])
 			})
 		})
-		function get_location() {
+		const get_location = function() {
 			if (navigator.geolocation) {
 				navigator.geolocation.getCurrentPosition(function(position) {
 					console.log(position)
