@@ -1,19 +1,17 @@
 const network = {}
 {
-	IMPORT(signal.js)
-	IMPORT(which.js)
 	const stringify = JSON.stringify
 	const parse = JSON.parse
 	const host = '127.0.0.1'
-	const communications_port = 2024
-	const page_port = 8000
+	const comm_port = 2024
+	const face_port = 8000
 	if (which() === 'client') {
 		network.create = function() {
 			const self = {}
 			self.open = signal.create()
 			self.close = signal.create()
 			self.error = signal.create()
-			const socket = new WebSocket('ws://' + host + ':' + communications_port)
+			const socket = new WebSocket('ws://' + host + ':' + comm_port)
 			socket.onopen = self.open.send
 			socket.onclose = self.close.send
 			socket.onerror = self.error.send
@@ -43,21 +41,24 @@ const network = {}
 	else if (which() === 'server') {
 		const fs = require('fs')
 		const http = require('http')
-		const net = require('net')
-		IMPORT(peer.js)
-		http.createServer(function(request, response) {
+		//const net = require('net')
+		const ws = require('ws')
+		const face_server = http.createServer(function(request, response) {
 			response.end(fs.readFileSync('build/index.html'))
-		}).listen(page_port)
+		})
+		face_server.listen(face_port)
 		network.create = function() {
 			const self = {}
 			self.open = signal.create()
 			self.close = signal.create()
 			self.error = signal.create()
+			//const comm_server = new ws.WebSocketServer({server: face_server})
+			const comm_server = new ws.WebSocketServer({port: comm_port})
 			const sockets = []
 			self.send = function(values) {
 				for (const id in sockets) {
 					if (sockets[id]) {
-						//sockets[id].send(stringify(values))
+						sockets[id].send(stringify(values))
 					}
 				}
 			}
@@ -68,6 +69,28 @@ const network = {}
 				}
 				return listeners[key] = signal.create() // bruh
 			}
+			let index = 0
+			comm_server.on('connection', socket => {
+				let id = ++index
+				let peer_ = peer.create(socket)
+				sockets[id] = peer_
+				//sockets[id] = peer.create(socket)
+				console.log('asd')
+				socket.on('close', () =>
+					sockets[id] = undefined
+				)
+				socket.on('message', message => {
+					let [key, ...values] = parse(message.toString())
+					if (listeners[key]) {
+						values.unshift(peer_)
+						listeners[key].fire(values)
+					}
+					else {
+						console.log('no key', key)
+					}
+				})
+			})
+			/*
 			const crypto = require('crypto')
 			const generate_accept_header = function(key) {
 				const magic = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
@@ -76,12 +99,12 @@ const network = {}
 			const send_websocket_message = function(socket, message) {
 				socket.write(Buffer.from(`81${Buffer.from(message).toString('hex')}`, 'hex'))
 			}
-			const byteArrayToHex = function(byteArray) {
-				return Array.from(byteArray, byte => {
+			const byte_array_to_hex = function(byte_array) {
+				return Array.from(byte_array, byte => {
 					return ('0' + (byte & 0xff).toString(16)).slice(-2)
 				}).join('')
 			}
-			const decodeWebSocketFrame = function(frameBytes) {
+			const decode_websocket_frame = function(frameBytes) {
 				const opcode = frameBytes[0] & 0x0f
 				const fin = (frameBytes[0] & 0x80) !== 0
 				const masked = (frameBytes[1] & 0x80) !== 0
@@ -94,7 +117,7 @@ const network = {}
 					payloadStartIndex = 4
 				} else if (payloadLength === 127) {
 					// Note: This is a simplified example, handling 64-bit payloads properly would require BigInt
-					payloadLength = frameBytes.readUInt32BE(2) * Math.pow(2, 32) + frameBytes.readUInt32BE(6)
+					payloadLength = frameBytes.readUInt32BE(2)*pow(2, 32) + frameBytes.readUInt32BE(6)
 					payloadStartIndex = 10
 				}
 				if (masked) {
@@ -102,7 +125,7 @@ const network = {}
 					payloadStartIndex += 4
 					payloadData = frameBytes.slice(payloadStartIndex)
 					for (let i = 0; i < payloadData.length; i++) {
-						payloadData[i] ^= mask[i % 4]
+						payloadData[i] ^= mask[i%4]
 					}
 				} else {
 					payloadData = frameBytes.slice(payloadStartIndex)
@@ -113,7 +136,6 @@ const network = {}
 					payload: payloadData.toString('utf8')
 				}
 			}
-			/*
 			const send_websocket_message = function(socket, message) {
 				const frame = Buffer.alloc(2 + Buffer.byteLength(message))
 				frame[0] = 0x81; // Final frame, Text data
@@ -123,7 +145,6 @@ const network = {}
 				// Send the frame to the server
 				socket.write(frame)
 			}
-			*/
 			let index = 0
 			const server = net.createServer(function(socket) {
 				const id = ++index
@@ -138,9 +159,8 @@ const network = {}
 					const key = data.toString().match(/Sec-WebSocket-Key: (.*)/i)[1]
 					socket.write(`HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ${generate_accept_header(key)}\r\n\r\n`)
 					socket.on('data', function(data) {
-						//console.log(decodeWebSocketFrame(data))
+						//console.log(decode_websocket_frame(data))
 						//console.log(parse(data.toString()))
-						/*
 						const [key, ...values] = parse(data.toString())
 						if (listeners[key]) {
 							values.unshift(the_peer)
@@ -149,7 +169,6 @@ const network = {}
 						else {
 							console.log('no key', key)
 						}
-						*/
 					})
 				})
 				socket.on('end', function() {
@@ -157,9 +176,10 @@ const network = {}
 					sockets[id] = undefined
 				})
 			})
-			server.listen(communications_port, host, function() {
+			server.listen(comm_port, host, function() {
 				console.log('running')
 			})
+			*/
 			return self
 		}
 	}

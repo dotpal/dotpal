@@ -1,6 +1,9 @@
+'use strict'
+INCLUDE(which.js)
+INCLUDE(signal.js)
+INCLUDE(network.js)
+INCLUDE(peer.js)
 {
-	IMPORT(network.js)
-	IMPORT(peer.js)
 	const the_network = network.create()
 	the_network.receive('fetch').connect(function([peer, path]) {
 		network.send(['fetch', readFileSync(path).toString()])
