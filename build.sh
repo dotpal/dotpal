@@ -1,5 +1,5 @@
 # page
-printf '<!doctype html>' > build/index.html
+printf '<!doctype html><body>' > build/index.html
 # client
 printf '<script>' >> build/index.html
 node recursive_include.js src/client.js >> build/index.html

@@ -14,9 +14,9 @@ const get_data_url = function(path) {
 const process_file = function(path) {
 	let content = fs.readFileSync(path, 'utf8')
 	while (true) {
-		const content1 = content.replace(/INCLUDE\(([^)]*)\)/g, function(match, path) {
+		const content1 = content.replace(/_include\(([^)]*)\)/g, function(match, path) {
 			const data_url = get_data_url('src/' + path)
-			if (data_url) {
+			if (data_url !== undefined) {
 				return data_url
 			}
 			else {

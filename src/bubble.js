@@ -14,6 +14,7 @@ const bubble = {}
 		}
 	}
 	bubble.create = function(px, py, vx, vy, r, text, link) {
+		//debug.log('new bubble', text)
 		const self = {}
 		let fx, fy
 		const link_element = document.createElement('a')
@@ -21,23 +22,20 @@ const bubble = {}
 		document.body.appendChild(link_element)
 		link_element.onclick = function(event) {
 			event.preventDefault()
-			console.log('click bubble', text)
 			camera.focus(self)
 		}
-		const bubble_element = document.createElement('div')
-		bubble_element.setAttribute('class', 'bubble')
-		bubble_element.innerHTML = text
+		const bubble_element = document.createElement('bubble')
+		bubble_element.innerHTML = text // this cannot be textcontext
 		link_element.appendChild(bubble_element)
 		const present = function() {
 			const [cpx, cpy, cpz] = camera.get_geometry()
-			const project_scale = innerHeight/cpz
-			bubble_element.style.left = 0.5*innerWidth + (px - r - cpx)*project_scale + 'px'
-			bubble_element.style.top = 0.5*innerHeight + (py - r - cpy)*project_scale + 'px'
-			bubble_element.style.width = 2*r*project_scale + 'px'
-			bubble_element.style.height = 2*r*project_scale + 'px'
-			bubble_element.style.lineHeight = 2*r*project_scale + 'px'
-			bubble_element.style.fontSize = 0.3*r*project_scale + 'px'
-			bubble_element.style['background-image'] = 'url(INCLUDE(bubble.png))' // this is probably using a lot of memory
+			bubble_element.style.left = 100*(0.5*innerWidth/innerHeight + (px - r - cpx)/cpz) + 'vh' // fucking stupid percentages
+			bubble_element.style.top = 100*(0.5 + (py - r - cpy)/cpz) + 'vh'
+			bubble_element.style.width = 100*2*r/cpz + 'vh'
+			bubble_element.style.height = 100*2*r/cpz + 'vh'
+			bubble_element.style.lineHeight = 100*2*r/cpz + 'vh'
+			bubble_element.style.fontSize = 100*0.3*r/cpz + 'vh'
+			bubble_element.style['background-image'] = 'url(_include(bubble.png))' // this is probably using a lot of memory
 		}
 		self.present = present
 		self.get_geometry = function() {
@@ -68,7 +66,7 @@ const bubble = {}
 			// d position
 			const dpx = px - px0
 			const dpy = py - py0
-			console.log(dpx, dt*vx)
+			debug.log(dpx, dt*vx)
 			vx = vx + dt*fx
 			vy = vy + dt*fy
 			// minimize intersection time in the set of all intersections
@@ -110,7 +108,7 @@ const bubble = {}
 		self.get_state = function() {
 			return [px, py, vx, vy, r, text, link]
 		}
-		self.destroy = function() {
+		self.remove = function() {
 		}
 		bubbles.push(self)
 		return self

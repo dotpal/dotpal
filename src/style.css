@@ -1,14 +1,52 @@
-.bubble {
+* {
+	font-size: 2vh;
+	margin: 0;
+}
+bubble {
+	align-items: center;
+	background-size: 100%;
 	position: fixed;
 	text-align: center;
-	align-items: center;
-	background-image: url('bubble.png');
-	background-size: 100%;
 }
-.debug {
+debug {
+	background-color: #ff00ff;
 	position: fixed;
-	background-color: red;
 }
-body {
-	margin: 0;
+container {
+	align-items: center;
+	background-color: rgba(0, 0, 0, 0.2);
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	justify-content: center;
+	left: 0;
+	position: fixed;
+	top: 0;
+	width: 100%;
+}
+button {
+	background-color: #ea4c89;
+	border-radius: 2vh;
+	border-style: none;
+	color: #ffffff;
+	cursor: pointer;
+	margin-top: 2vh;
+	padding: 2vh;
+	transition: all 180ms;
+}
+button:hover {
+	background-color: #f082ac;
+	transform: translateY(-0.5vh);
+}
+form {
+	background-color: #ffffff;
+	border-radius: 2vh;
+	box-shadow: 2vh 2vh rgba(0, 0, 0, 0.2);
+	padding: 2vh;
+}
+input, textarea {
+	background-color: rgba(0, 0, 0, 0.1);
+	border-radius: 2vh;
+	border: none;
+	padding: 2vh;
 }

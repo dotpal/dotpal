@@ -1,17 +1,17 @@
 'use strict'
-INCLUDE(which.js)
-INCLUDE(signal.js)
-INCLUDE(network.js)
-INCLUDE(peer.js)
+_include(which.js)
+_include(signal.js)
+_include(debug.js)
+_include(network.js)
 {
-	const the_network = network.create()
-	the_network.receive('fetch').connect(function([peer, path]) {
-		network.send(['fetch', readFileSync(path).toString()])
+	const fs = require('fs')
+	network.receive('fetch').connect(function([peer, path]) {
+		network.send(['fetch', fs.readFileSync(path).toString()])
 	})
 	// we should really do secret instead
-	the_network.receive('login').connect(function([peer, secret]) {
-		console.log(secret)
-		writeFileSync('store/' + secret, 'wtf man')
+	network.receive('login').connect(function([peer, secret]) {
+		debug.log('received login', secret)
+		fs.writeFileSync('store/' + secret, 'wtf man')
 		peer.send(['asd', 'lmfao'])
 	})
 }
