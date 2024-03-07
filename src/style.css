@@ -1,12 +1,27 @@
 * {
+	backface-visibility: hidden;
 	font-size: 2vh;
+	image-rendering: pixelated;
 	margin: 0;
+	text-rendering: optimizeSpeed;
 }
 bubble {
 	align-items: center;
+	animation: expand 2s;
+	background-position: center;
+	background-repeat: no-repeat;
 	background-size: 100%;
 	position: fixed;
 	text-align: center;
+}
+@keyframes expand {
+	from {
+		background-size: 0;
+		font-size: 0;
+	}
+	to {
+		background-size: 100%;
+	}
 }
 debug {
 	background-color: #ff00ff;
@@ -31,6 +46,7 @@ button {
 	color: #ffffff;
 	cursor: pointer;
 	margin-top: 2vh;
+	margin-right: 2vh;
 	padding: 2vh;
 	transition: all 180ms;
 }
@@ -45,7 +61,7 @@ form {
 	padding: 2vh;
 }
 input, textarea {
-	background-color: rgba(0, 0, 0, 0.1);
+	background-color: rgba(0, 0, 0, 0.05);
 	border-radius: 2vh;
 	border: none;
 	padding: 2vh;

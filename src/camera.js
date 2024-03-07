@@ -7,17 +7,16 @@ const camera = {}
 	let target = undefined
 	let px1 = 0
 	let py1 = 0
-	let pz1 = 5
+	let pz1 = 0
 	let px = 0
 	let py = 0
-	let pz = 5
+	let pz = 0
 	let ux = -1/0
 	let uy = -1/0
 	let lx = +1/0
 	let ly = +1/0
 	let pushed = 0
 	camera.focus = function(subject) {
-		//debug.log('focus', subject)
 		target = subject
 	}
 	camera.get_geometry = function() {

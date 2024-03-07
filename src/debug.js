@@ -3,7 +3,9 @@ const debug = {}
 	const debug_mode = true
 	if (which() === 'client') {
 		onerror = function(message, source, line, column, error) {
-			debug.output(message)
+			if (debug_mode) {
+				debug.output(message)
+			}
 		}
 		debug.output = function(message) {
 			const element = document.createElement('label')
@@ -14,7 +16,7 @@ const debug = {}
 		debug.log = function(...values) {
 			if (debug_mode) {
 				console.log(...values)
-				debug.output(...values)
+				//debug.output(...values)
 			}
 		}
 		debug.point = function(px, py) {

@@ -2,9 +2,16 @@ const network = {}
 {
 	const stringify = JSON.stringify
 	const parse = JSON.parse
-	const host = '127.0.0.1'
+	const host = '192.168.1.165'
 	const comm_port = 2024
 	const face_port = 8000
+	const listeners = {}
+	network.receive = function(key) {
+		if (listeners[key] !== undefined) {
+			return listeners[key]
+		}
+		return listeners[key] = signal.create() // wtf lol
+	}
 	if (which() === 'client') {
 		network.open = signal.create()
 		network.close = signal.create()
@@ -13,16 +20,10 @@ const network = {}
 		socket.onopen = network.open.send
 		socket.onclose = network.close.send
 		socket.onerror = network.error.send
-		const listeners = {}
-		network.receive = function(key) {
-			if (listeners[key]) {
-				return listeners[key]
-			}
-			return listeners[key] = signal.create() // wtf lol
-		}
-		socket.message = function(data) {
-			const [key, ...values] = parse(data)
-			if (listeners[key]) {
+		socket.onmessage = function(event) {
+			const [key, ...values] = parse(event.data)
+			if (listeners[key] !== undefined) {
+				values.unshift(socket)
 				listeners[key].send(values)
 			}
 			else {
@@ -46,6 +47,9 @@ const network = {}
 				network.send(queue[i])
 			}
 		})
+		network.receive('users_online').connect(function([peer, users_online]) {
+			debug.log('users online is', users_online)
+		})
 	}
 	else if (which() === 'server') {
 		//const net = require('net')
@@ -53,6 +57,7 @@ const network = {}
 		const http = require('http')
 		const ws = require('ws')
 		const face_server = http.createServer(function(request, response) {
+			response.setHeader('Access-Control-Allow-Origin', '*') // idk if this is needed
 			response.end(fs.readFileSync('build/index.html'))
 		})
 		face_server.listen(face_port)
@@ -64,34 +69,27 @@ const network = {}
 		const sockets = []
 		network.send = function(values) {
 			for (const id in sockets) {
-				if (sockets[id]) {
+				if (sockets[id] !== undefined) {
 					debug.log('send', stringify(values))
 					sockets[id].send(stringify(values))
 				}
 			}
 		}
-		const listeners = {}
-		network.receive = function(key) {
-			if (listeners[key]) {
-				return listeners[key]
-			}
-			return listeners[key] = signal.create() // bruh
-		}
+		let users_online = 0
 		let index = 0
 		comm_server.on('connection', function(socket) {
+			++users_online
+			socket.send(stringify(['users_online', users_online]))
 			const id = ++index
-			const the_peer = {}
-			the_peer.send = function(values) {
-				socket.send(stringify(values))
-			}
-			sockets[id] = the_peer
+			sockets[id] = socket
 			socket.on('close', function() {
 				sockets[id] = undefined
+				--users_online
 			})
 			socket.on('message', function(message) {
 				const [key, ...values] = parse(message.toString())
-				if (listeners[key]) {
-					values.unshift(the_peer)
+				if (listeners[key] !== undefined) {
+					values.unshift(socket)
 					listeners[key].send(values)
 				}
 				else {
@@ -159,8 +157,8 @@ const network = {}
 		let index = 0
 		const server = net.createServer(function(socket) {
 			const id = ++index
-			const the_peer = peer.create(socket)
-			sockets[id] = the_peer
+			const socket = peer.create(socket)
+			sockets[id] = socket
 			debug.log('peer', id, 'connected')
 			socket.on('error', function() {
 				debug.log('error')
@@ -173,8 +171,8 @@ const network = {}
 					//debug.log(decode_websocket_frame(data))
 					//debug.log(parse(data.toString()))
 					const [key, ...values] = parse(data.toString())
-					if (listeners[key]) {
-						values.unshift(the_peer)
+					if (listeners[key] !== undefined) {
+						values.unshift(socket)
 						listeners[key].send(values)
 					}
 					else {

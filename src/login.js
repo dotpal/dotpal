@@ -13,14 +13,20 @@ const login = {}
 	const min = Math.min
 	const random = Math.random
 	const sqrt = Math.sqrt
-	network.receive('asd').connect(function([a, b]) {
-		debug.log(a, b)
-	})
+	const PI = Math.PI
+	const floor = Math.floor
+	const deg = PI/180
+	const mod = function(x, y) {
+		return x - floor(x/y)*y
+	}
 	const get_location = function() {
 		if (navigator.geolocation !== undefined) {
+			let location
 			navigator.geolocation.getCurrentPosition(function(position) {
-				debug.log(position)
+				location = [mod(position.coords.latitude*deg, PI), mod(position.coords.longitude*deg, PI)]
+				debug.log('location registered at coordinates', location)
 			})
+			return location
 		}
 		else {
 			debug.log('geolocation is not supported by this browser')
@@ -55,6 +61,7 @@ const login = {}
 	login.receive_cookie = signal.create()
 	login.receive_cookie.connect(function([secret]) {
 		network.send(['login', secret])
+		get_location()
 		const bubbles_length = 6 + 32*random() | 0
 		for (let i = bubbles_length; i--;) {
 			bubble.create(sqrt(bubbles_length)*random(), sqrt(bubbles_length)*random(), 0, 0, sqrt(random()), get_random_word(), 'https://www.blocksrey.com/')
@@ -101,5 +108,4 @@ const login = {}
 			})
 		}
 	}
-	debug.log(document.cookie === '')
 }
