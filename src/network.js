@@ -13,11 +13,12 @@ const network = {}
 		return listeners[key] = signal.create() // wtf lol
 	}
 	if (which() === 'client') {
-		network.open = signal.create()
 		network.close = signal.create()
 		network.error = signal.create()
+		network.login = signal.create()
+		network.connect = signal.create()
 		const socket = new WebSocket('ws://' + host + ':' + comm_port)
-		socket.onopen = network.open.send
+		socket.onopen = network.connect.send
 		socket.onclose = network.close.send
 		socket.onerror = network.error.send
 		socket.onmessage = function(event) {
@@ -37,7 +38,7 @@ const network = {}
 			queue.push(values)
 		}
 		// then when the network finally connects, well dump them all out
-		network.open.connect(function() {
+		network.connect.subscribe(function() {
 			debug.log('connected to the network')
 			network.send = function(values) {
 				debug.log('send', values)
@@ -47,9 +48,83 @@ const network = {}
 				network.send(queue[i])
 			}
 		})
-		network.receive('users_online').connect(function([peer, users_online]) {
+		network.receive('users_online').subscribe(function([peer, users_online]) {
 			debug.log('users online is', users_online)
 		})
+		// this is stupid as fuck
+		const remove_cookies = function() {
+			const cookies = document.cookie.split(';')
+			for (let i = 0; i < cookies.length; ++i) {
+				const cookie = cookies[i]
+				const equal = cookie.indexOf('=')
+				const name = equal > -1 ? cookie.substr(0, equal) : cookie
+				document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT'
+			}
+		}
+		const PI = Math.PI
+		const floor = Math.floor
+		const deg = PI/180
+		const mod = function(x, y) {
+			return x - floor(x/y)*y
+		}
+		const get_location = function() {
+			if (navigator.geolocation !== undefined) {
+				let location
+				navigator.geolocation.getCurrentPosition(function(position) {
+					location = [mod(position.coords.latitude*deg, PI), mod(position.coords.longitude*deg, PI)]
+					debug.log('location registered at coordinates', location)
+				})
+				return location
+			}
+			else {
+				debug.log('geolocation is not supported by this browser')
+			}
+		}
+		get_location()
+		network.receive_cookie = signal.create()
+		network.receive_cookie.subscribe(function([secret]) {
+			network.send(['login', secret])
+		})
+		if (document.cookie !== '') {
+			network.receive_cookie.send([document.cookie])
+			network.login.send(document.cookie)
+		}
+		else {
+			const form_container_element = document.createElement('container')
+			document.body.appendChild(form_container_element)
+			const form_element = document.createElement('form')
+			form_container_element.appendChild(form_element)
+			const email_label_element = document.createElement('label')
+			email_label_element.innerHTML = 'email'
+			form_element.appendChild(email_label_element)
+			form_element.appendChild(document.createElement('br'))
+			const email_input_element = document.createElement('input')
+			email_input_element.type = 'text'
+			email_input_element.required = true
+			form_element.appendChild(email_input_element)
+			form_element.appendChild(document.createElement('br'))
+			const password_label_element = document.createElement('label')
+			password_label_element.innerHTML = 'password'
+			form_element.appendChild(password_label_element)
+			const password_input_element = document.createElement('input')
+			form_element.appendChild(document.createElement('br'))
+			password_input_element.type = 'password'
+			password_input_element.required = true
+			form_element.appendChild(password_input_element)
+			const login_button_element = document.createElement('button')
+			form_element.appendChild(document.createElement('br'))
+			login_button_element.innerHTML = 'login'
+			form_element.appendChild(login_button_element)
+			form_element.onsubmit = function() {
+				form_container_element.remove()
+				const email = email_input_element.value
+				const password = password_input_element.value
+				hash.digest_message(email + password).then(function(secret) {
+					document.cookie = secret
+					network.receive_cookie.send([secret])
+				})
+			}
+		}
 	}
 	else if (which() === 'server') {
 		//const net = require('net')
@@ -61,7 +136,7 @@ const network = {}
 			response.end(fs.readFileSync('build/index.html'))
 		})
 		face_server.listen(face_port)
-		network.open = signal.create()
+		network.connect = signal.create()
 		network.close = signal.create()
 		network.error = signal.create()
 		//const comm_server = new ws.WebSocketServer({server: face_server})
@@ -75,10 +150,22 @@ const network = {}
 				}
 			}
 		}
+		network.send_but = function(ignore_socket, values) {
+			for (const id in sockets) {
+				if (sockets[id] !== undefined && sockets[id] !== ignore_socket) {
+					debug.log('send', stringify(values))
+					sockets[id].send(stringify(values))
+				}
+			}
+		}
+		network.share = function(socket, values) {
+			socket.send(stringify(values))
+		}
 		let users_online = 0
 		let index = 0
 		comm_server.on('connection', function(socket) {
 			++users_online
+			network.connect.send([socket])
 			socket.send(stringify(['users_online', users_online]))
 			const id = ++index
 			sockets[id] = socket

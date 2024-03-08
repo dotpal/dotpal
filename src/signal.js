@@ -3,7 +3,7 @@ const signal = {}
 	signal.create = function() {
 		const self = {}
 		const events = []
-		self.connect = function(callback) {
+		self.subscribe = function(callback) {
 			events.push(callback)
 			return function() {
 				events.splice(events.indexOf(callback), 1)

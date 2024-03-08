@@ -6,21 +6,19 @@
 	text-rendering: optimizeSpeed;
 }
 bubble {
-	align-items: center;
-	animation: expand 2s;
-	background-position: center;
-	background-repeat: no-repeat;
+	animation: fun 2s;
+	background-repeat: no-repeat; /* maybe this is faster */
 	background-size: 100%;
+	cursor: pointer;
 	position: fixed;
 	text-align: center;
 }
-@keyframes expand {
+@keyframes fun {
 	from {
-		background-size: 0;
-		font-size: 0;
+		transform: scale(0);
 	}
 	to {
-		background-size: 100%;
+		transform: scale(1);
 	}
 }
 debug {
@@ -40,7 +38,7 @@ container {
 	width: 100%;
 }
 button {
-	background-color: #ea4c89;
+	background-color: #e65a99; /* 90% */
 	border-radius: 2vh;
 	border-style: none;
 	color: #ffffff;
@@ -51,18 +49,20 @@ button {
 	transition: all 180ms;
 }
 button:hover {
-	background-color: #f082ac;
+	background-color: #ff63a9; /* 100% */
 	transform: translateY(-0.5vh);
+	box-shadow: 0vh 0.5vh #e65a99; /* 90% */
 }
 form {
-	background-color: #ffffff;
+	background-color: #ffffff; /* 100% */
 	border-radius: 2vh;
-	box-shadow: 2vh 2vh rgba(0, 0, 0, 0.2);
+	box-shadow: 0vh 0.5vh #e6e6e6; /* 90% */
 	padding: 2vh;
 }
 input, textarea {
-	background-color: rgba(0, 0, 0, 0.05);
+	background-color: #f2f2f2; /* 95% */
 	border-radius: 2vh;
 	border: none;
 	padding: 2vh;
+	resize: none;
 }

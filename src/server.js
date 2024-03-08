@@ -7,7 +7,7 @@ _include(post.js)
 {
 	const fs = require('fs')
 	// we should really do secret instead
-	network.receive('login').connect(function([peer, secret]) {
+	network.receive('login').subscribe(function([peer, secret]) {
 		debug.log('received login', secret)
 		fs.writeFileSync('store/' + secret, 'wtf man')
 	})

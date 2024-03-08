@@ -1,12 +1,12 @@
 'use strict'
 _include(which.js)
 _include(signal.js)
+_include(hash.js)
 _include(debug.js)
 _include(logic.js)
 _include(bubble.js)
-_include(post.js)
 _include(network.js)
-_include(login.js)
+_include(post.js)
 _include(camera.js)
 // update
 {

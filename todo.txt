@@ -1,0 +1,12 @@
+- attach images to posts
+- attach links to posts
+- create posts on bubbles like threads on twitter
+- follow people
+- posts should have descriptions
+- post expiration date
+- posts should have timestamps
+- posts should have username of that who posted
+- posts should have titles
+- set icons for user
+- set username for user
+- you should only be able to post at your location

@@ -13,19 +13,24 @@ const bubble = {}
 			camera.focus(undefined)
 		}
 	}
-	bubble.create = function(px, py, vx, vy, r, text, link) {
-		//debug.log('new bubble', text)
+	bubble.create = function(the_post) {
+		let px = random()
+		let py = random()
+		let vx = 0
+		let vy = 0
+		let r = 1
 		const self = {}
 		let fx, fy
 		const link_element = document.createElement('a')
-		link_element.href = link
 		document.body.appendChild(link_element)
 		link_element.onclick = function(event) {
 			event.preventDefault()
 			camera.focus(self)
+			the_post.view()
 		}
+		const text = the_post.get_description()
 		const bubble_element = document.createElement('bubble')
-		bubble_element.innerHTML = text // this cannot be textcontext
+		bubble_element.innerHTML = text.split('\n')[0].substr(0, 12) // this cannot be textcontext
 		link_element.appendChild(bubble_element)
 		const present = function() {
 			const [cpx, cpy, cpz] = camera.get_geometry()
@@ -41,14 +46,12 @@ const bubble = {}
 		self.get_geometry = function() {
 			return [px, py, r]
 		}
-		self.set_state = function(px1, py1, vx1, vy1, r1, text1, link1) {
+		self.set_state = function(px1, py1, vx1, vy1, r1) {
 			px = or(px1, px)
 			py = or(py1, py)
 			vx = or(vx1, vx)
 			vy = or(vy1, vy)
 			r = or(r1, r)
-			text = or(text1, text)
-			link = or(link1, link)
 			present()
 		}
 		self.set_force = function(fx1, fy1) {
@@ -106,7 +109,7 @@ const bubble = {}
 			}
 		}
 		self.get_state = function() {
-			return [px, py, vx, vy, r, text, link]
+			return [px, py, vx, vy, r]
 		}
 		self.remove = function() {
 		}
@@ -159,11 +162,14 @@ const bubble = {}
 		//*
 		//const sfx = 0
 		//const sfy = 0
+		if (bubbles.length === 1) {
+			return [0, 0]
+		}
 		const bubble0 = bubbles[i0]
 		const [px0, py0, r0] = bubble0.get_geometry()
 		// forces against other bubbles
 		let min_v = 1/0
-		let min_i = undefined
+		let min_i = 0
 		for (let i1 = bubbles.length; i1--;) {
 			const [px1, py1, r1] = bubbles[i1].get_geometry()
 			if (i1 !== i0) {
