@@ -1,26 +1,25 @@
-const debug = {}
+const Debug = {}
 {
 	const debug_mode = true
 	if (which() === 'client') {
 		onerror = function(message, source, line, column, error) {
 			if (debug_mode) {
-				debug.output(message)
+				Debug.output(message)
 			}
 		}
-		debug.output = function(message) {
+		Debug.output = function(message) {
 			const element = document.createElement('label')
 			element.textContent = message
 			document.body.appendChild(element)
 			document.body.appendChild(document.createElement('br'))
 		}
-		debug.log = function(...values) {
+		Debug.log = function(...values) {
 			if (debug_mode) {
 				console.log(...values)
-				//debug.output(...values)
 			}
 		}
-		debug.point = function(px, py) {
-			const [cpx, cpy, cpz] = camera.get_geometry()
+		Debug.point = function(px, py) {
+			const [cpx, cpy, cpz] = Camera.get_geometry()
 			const element = document.createElement('debug')
 			element.style.left = 100*(0.5*innerWidth/innerHeight + (px - cpx)/cpz) + 'vh'
 			element.style.top = 100*(0.5 + (py - cpy)/cpz) + 'vh'
@@ -30,18 +29,18 @@ const debug = {}
 		}
 	}
 	else if (which() === 'server') {
-		debug.log = function(...values) {
+		Debug.log = function(...values) {
 			if (debug_mode) {
 				console.log(...values)
 			}
 		}
 	}
-	debug.benchmark = function(name) {
+	Debug.benchmark = function(name) {
 		const self = {}
 		const t0 = performance.now()
 		self.end = function() {
 			const t1 = performance.now()
-			debug.log(name, t1 - t0, 'ms')
+			Debug.log(name, t1 - t0, 'ms')
 		}
 		return self
 	}

@@ -1,12 +1,12 @@
+- set username for user
+- set icons for user
 - attach images to posts
 - attach links to posts
-- create posts on bubbles like threads on twitter
-- follow people
-- posts should have descriptions
+- create posts on blubs like threads on twitter
+x posts should have descriptions
 - post expiration date
 - posts should have timestamps
 - posts should have username of that who posted
-- posts should have titles
-- set icons for user
-- set username for user
 - you should only be able to post at your location
+- follow people
+- dont make it rely on fs (save index.html into memory on the server)

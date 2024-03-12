@@ -1,7 +1,7 @@
-const cast = {}
+const Cast = {}
 {
 	const sqrt = Math.sqrt
-	cast.get_circle_onto_circle_intersection_time = function(apx, apy, avx, avy, ar, bpx, bpy, bvx, bvy, br) {
+	Cast.get_circle_onto_circle_intersection_time = function(apx, apy, avx, avy, ar, bpx, bpy, bvx, bvy, br) {
 		const avav = avx*avx + avy*avy
 		const avap = avx*apx + avy*apy
 		const avbv = avx*bvx + avy*bvy
@@ -17,7 +17,7 @@ const cast = {}
 		const b = avbp - bvap + bvbp - avap
 		const c = 0.25*(apap - 2*apbp + bpbp - (ar + br)*(ar + br))
 		const t = zeros.solve(a, -b, c)[0]
-		//if (t < 0) debug.log('uhhh t < 0')
+		//if (t < 0) Debug.log('uhhh t < 0')
 		//*/
 		const t = (-avap + avbp - bvap + bvbp - sqrt((avap - avbp + bvap - bvbp)*(avap - avbp + bvap - bvbp) - (avav + 2*avbv + bvbv)*(apap - 2*apbp + bpbp - (ar + br)*(ar + br))))/(avav + 2*avbv + bvbv)
 		return t

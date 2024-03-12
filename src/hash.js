@@ -1,6 +1,6 @@
-const hash = {}
+const Hash = {}
 {
-	hash.digest_message = async function(message) {
+	Hash.digest = async function(message) {
 		const stream = new TextEncoder().encode(message)
 		const hash = await crypto.subtle.digest('sha-1', stream)
 		const bytes = Array.from(new Uint8Array(hash))

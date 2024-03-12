@@ -1,10 +1,10 @@
-const spring = {}
+const Spring = {}
 {
 	const cos = Math.cos
 	const sin = Math.sin
 	const exp = Math.exp
 	const sqrt = Math.sqrt
-	spring.create = function(p, v, k, d) {
+	Spring.create = function(p, v, k, d) {
 		const self = {}
 		const t = 0
 		self.step = function(dt) {

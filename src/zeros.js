@@ -1,10 +1,10 @@
 // thanks to trey
-const zeros = {}
+const Zeros = {}
 {
 	const sqrt = Math.sqrt
 	const cbrt = Math.cbrt
-	const or = logic.or
-	const is = logic.is
+	const or = Logic.or
+	const is = Logic.is
 	const epsilon = 1e-10
 	// solve results are guaranteed real && sorted.
 	const solve = function(a, b, c, d, e) {
@@ -106,5 +106,5 @@ const zeros = {}
 			return []
 		}
 	}
-	zeros.solve = solve
+	Zeros.solve = solve
 }

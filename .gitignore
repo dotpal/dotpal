@@ -1,5 +1,5 @@
+blub/
 build/
 node_modules/
 package-lock.json
-posts/
-store/
+user/

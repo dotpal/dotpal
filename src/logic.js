@@ -1,15 +1,15 @@
-const logic = {}
+const Logic = {}
 {
 	const is = function(v) {
 		return v !== undefined
 	}
-	logic.is = is
+	Logic.is = is
 	const and = function(a, b) {
 		if (is(a) && is(b)) {
 			return b
 		}
 	}
-	logic.and = and
+	Logic.and = and
 	const or = function(a, b) {
 		if (is(a)) {
 			return a
@@ -18,5 +18,5 @@ const logic = {}
 			return b
 		}
 	}
-	logic.or = or
+	Logic.or = or
 }
