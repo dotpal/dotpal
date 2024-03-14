@@ -85,7 +85,7 @@ const Blub = {}
 				title.value = blub.get_title()
 				description.value = blub.get_description()
 			}
-			const close = function() {
+			const close_menu = function() {
 				container.remove()
 				Camera.focus(undefined)
 			}
@@ -95,7 +95,7 @@ const Blub = {}
 				form.appendChild(publish)
 				form.onsubmit = function(event) {
 					event.preventDefault()
-					close()
+					close_menu()
 					const options = {}
 					options.description = description.value
 					options.title = title.value
@@ -103,15 +103,15 @@ const Blub = {}
 					Blub.create(options)
 				}
 			}
-			const cancel = document.createElement('button')
-			cancel.innerHTML = 'cancel'
-			form.appendChild(cancel)
-			cancel.onclick = function(event) {
-				close()
+			const close = document.createElement('button')
+			close.innerHTML = 'close'
+			form.appendChild(close)
+			close.onclick = function(event) {
+				close_menu()
 			}
 			container.onclick = function(event) {
 				if (event.target === container) {
-					close()
+					close_menu()
 				}
 			}
 		}
@@ -170,7 +170,7 @@ const Blub = {}
 				blub.style.height = 100*2*r/cpz + 'vh'
 				blub.style.lineHeight = 100*2*r/cpz + 'vh'
 				blub.style.fontSize = 100*0.3*r/cpz + 'vh'
-				blub.style['background-image'] = 'url(_include(blub.png))' // this is probably using a lot of memory
+				blub.style.backgroundImage = 'url(_include(blub.png))' // this is probably using a lot of memory
 			}
 			self.get_geometry = function() {
 				return [px, py, r]

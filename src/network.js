@@ -38,7 +38,7 @@ const Network = {}
 		}
 		// then when the network finally connects, well dump them all out
 		Network.connect.subscribe(function() {
-			Debug.log('connected to the Network')
+			Debug.log('connected to the network')
 			Network.send = function(values) {
 				Debug.log('send', values)
 				socket.send(stringify(values))
@@ -47,29 +47,12 @@ const Network = {}
 				Network.send(queue[i])
 			}
 		})
+		const netizens = document.createElement('value')
+		netizens.value = 'settings'
+		document.body.appendChild(netizens)
 		Network.receive('netizens').subscribe(function([peer, netizens]) {
 			Debug.log('users online is', netizens)
 		})
-		const PI = Math.PI
-		const floor = Math.floor
-		const deg = PI/180
-		const mod = function(x, y) {
-			return x - floor(x/y)*y
-		}
-		const get_location = function() {
-			if (navigator.geolocation !== undefined) {
-				let location
-				navigator.geolocation.getCurrentPosition(function(position) {
-					location = [mod(position.coords.latitude*deg, PI), mod(position.coords.longitude*deg, PI)]
-					Debug.log('location registered at coordinates', location)
-				})
-				return location
-			}
-			else {
-				Debug.log('geolocation is not supported by this browser')
-			}
-		}
-		//get_location()
 	}
 	else if (which() === 'server') {
 		//const net = require('net')

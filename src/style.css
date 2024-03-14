@@ -60,7 +60,7 @@ form {
 	padding-left: 2vh;
 	padding-top: 2vh;
 }
-input, textarea {
+textarea {
 	background-color: #f2f2f2; /* 95% */
 	border-radius: 2vh;
 	border: none;

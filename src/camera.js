@@ -49,7 +49,7 @@ const Camera = {}
 		ly = +1/0
 	}
 	Camera.step = function(dt) {
-		if (go_away === false) {
+		if (!go_away) {
 			if (target !== undefined) {
 				let r
 				[px1, py1, r] = target.get_geometry()
@@ -68,6 +68,12 @@ const Camera = {}
 			py = 1000
 			pz = 10
 		}
-		//update(t)
+		//document.body.style.backgroundPosition = 'center center'
+		//document.body.style.backgroundPosition = -100*px/pz + 'vh' + ' ' + -100*py/pz + 'vh'
+		//document.body.style.backgroundSize = 10*200/pz + 'vh'
+		//document.body.style.transform = ''
+		document.body.style.backgroundColor = '#e6e6e6'
+		document.body.style.backgroundImage = 'url(_include(globe.png))'
+		document.body.style.backgroundSize = '200vh'
 	}
 }

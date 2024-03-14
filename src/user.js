@@ -1,7 +1,33 @@
 const User = {}
 {
 	if (which() === 'client') {
-		User.open_editor = function() {
+		const PI = Math.PI
+		const floor = Math.floor
+		const deg = PI/180
+		const IP = 1/PI
+		const mod = function(x, y) {
+			return x - floor(x/y)*y
+		}
+		const get_location = function() {
+			if (navigator.geolocation !== undefined) {
+				navigator.geolocation.getCurrentPosition(function(position) {
+					const cx = mod(position.coords.latitude*deg, PI)
+					const cy = mod(position.coords.longitude*deg, 2*PI)
+					const pin = document.createElement('img')
+					pin.src = '_include(pin.png)'
+					pin.style.left = 100*(-1 + IP*cy) + 'vh'
+					pin.style.top = 100*(0.5 - IP*cx) + 'vh'
+					pin.style.position = 'fixed'
+					pin.style.transform = 'translate(-50%, -100%)'
+					document.body.appendChild(pin)
+				})
+			}
+			else {
+				Debug.log('geolocation is not supported by this browser') // this sounds like a bad assumption
+			}
+		}
+		get_location()
+		User.open = function() {
 			const container = document.createElement('container')
 			document.body.appendChild(container)
 			const form = document.createElement('form')
@@ -34,12 +60,12 @@ const User = {}
 				options.bio = bio.value
 				options.icon_url = icon_url.value
 				options.username = username.value
-				Network.send(['write_user', document.cookie, options])
+				Network.send(['edit', document.cookie, options])
 			}
-			const cancel = document.createElement('button')
-			cancel.innerHTML = 'cancel'
-			form.appendChild(cancel)
-			cancel.onclick = function(event) {
+			const close = document.createElement('button')
+			close.innerHTML = 'close'
+			form.appendChild(close)
+			close.onclick = function(event) {
 				container.remove()
 			}
 			container.onclick = function(event) {
@@ -52,7 +78,7 @@ const User = {}
 		settings.innerHTML = 'settings'
 		document.body.appendChild(settings)
 		settings.onclick = function() {
-			User.open_editor()
+			User.open()
 		}
 		User.secret = Tryer.create(function() {
 			if (document.cookie !== '') {
@@ -68,21 +94,27 @@ const User = {}
 			document.body.appendChild(container)
 			const form = document.createElement('form')
 			container.appendChild(form)
-			const email = document.createElement('input')
+			const email = document.createElement('textarea')
 			email.placeholder = 'email'
 			email.required = true
-			email.type = 'text'
+			email.rows = 1
 			form.appendChild(email)
 			form.appendChild(document.createElement('br'))
-			const password = document.createElement('input')
+			const password = document.createElement('textarea')
 			password.placeholder = 'password'
 			password.required = true
-			password.type = 'password'
+			password.rows = 1
 			form.appendChild(password)
 			const start = document.createElement('button')
 			form.appendChild(document.createElement('br'))
 			start.innerHTML = 'start'
 			form.appendChild(start)
+			const close = document.createElement('button')
+			close.innerHTML = 'close'
+			close.onclick = function() {
+				container.remove()
+			}
+			form.appendChild(close)
 			form.onsubmit = function() {
 				container.remove()
 				Hash.digest(email.value + password.value).then(function(secret) {
@@ -94,7 +126,7 @@ const User = {}
 			}
 		})
 		User.secret.pass(function([secret, options]) {
-			Network.send(['write_user', secret, options])
+			Network.send(['edit', secret, options])
 			Network.receive('login').subscribe(function([peer, options]) {
 				Debug.log('received options', options)
 				Camera.come_back()
@@ -116,7 +148,7 @@ const User = {}
 	}
 	else if (which() === 'server') {
 		const fs = require('fs')
-		Network.receive('write_user').subscribe(function([peer, secret, options1]) {
+		Network.receive('edit').subscribe(function([peer, secret, options1]) {
 			if (!options1) {
 				options1 = {}
 			}

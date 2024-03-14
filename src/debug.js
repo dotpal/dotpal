@@ -18,11 +18,21 @@ const Debug = {}
 				console.log(...values)
 			}
 		}
+		/*
 		Debug.point = function(px, py) {
 			const [cpx, cpy, cpz] = Camera.get_geometry()
 			const element = document.createElement('debug')
 			element.style.left = 100*(0.5*innerWidth/innerHeight + (px - cpx)/cpz) + 'vh'
 			element.style.top = 100*(0.5 + (py - cpy)/cpz) + 'vh'
+			element.style.width = '1vh'
+			element.style.height = '1vh'
+			document.body.appendChild(element)
+		}
+		*/
+		Debug.point = function(px, py) {
+			const element = document.createElement('debug')
+			element.style.left = 100*px + 'vh'
+			element.style.top = 100*py + 'vh'
 			element.style.width = '1vh'
 			element.style.height = '1vh'
 			document.body.appendChild(element)
