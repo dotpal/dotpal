@@ -1,7 +1,7 @@
 const Debug = {}
 {
 	const debug_mode = true
-	if (which() === 'client') {
+	if (Which() === 'client') {
 		onerror = function(message, source, line, column, error) {
 			if (debug_mode) {
 				Debug.output(message)
@@ -38,7 +38,7 @@ const Debug = {}
 			document.body.appendChild(element)
 		}
 	}
-	else if (which() === 'server') {
+	else if (Which() === 'server') {
 		Debug.log = function(...values) {
 			if (debug_mode) {
 				console.log(...values)

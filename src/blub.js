@@ -1,6 +1,6 @@
 const Blub = {}
 {
-	if (which() === 'client') {
+	if (Which() === 'client') {
 		const random = Math.random
 		const pow = Math.pow
 		const pi = Math.PI
@@ -99,7 +99,8 @@ const Blub = {}
 					const options = {}
 					options.description = description.value
 					options.title = title.value
-					options.user = User.get_id()
+					//Debug.log(User.get_id)
+					//options.user = User.get_id()
 					Blub.create(options)
 				}
 			}
@@ -214,10 +215,11 @@ const Blub = {}
 			Blub.create(options, null)
 		})
 	}
-	else if (which() === 'server') {
+	else if (Which() === 'server') {
 		const fs = require('fs')
 		const path = require('path')
 		Network.receive('blub').subscribe(function([peer, options]) {
+			Debug.log('receive time is', new Date().getTime())
 			fs.writeFileSync('blub/' + Math.random(), JSON.stringify(options))
 			Network.send_but(peer, ['blub', options])
 		})

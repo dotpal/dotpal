@@ -12,7 +12,7 @@ const Network = {}
 		}
 		return listeners[key] = Signal.create() // wtf lol
 	}
-	if (which() === 'client') {
+	if (Which() === 'client') {
 		Network.close = Signal.create()
 		Network.error = Signal.create()
 		Network.connect = Signal.create()
@@ -54,7 +54,7 @@ const Network = {}
 			Debug.log('users online is', netizens)
 		})
 	}
-	else if (which() === 'server') {
+	else if (Which() === 'server') {
 		//const net = require('net')
 		const fs = require('fs')
 		const http = require('http')

@@ -1,6 +1,6 @@
 const User = {}
 {
-	if (which() === 'client') {
+	if (Which() === 'client') {
 		const PI = Math.PI
 		const floor = Math.floor
 		const deg = PI/180
@@ -146,7 +146,7 @@ const User = {}
 			}
 		}
 	}
-	else if (which() === 'server') {
+	else if (Which() === 'server') {
 		const fs = require('fs')
 		Network.receive('edit').subscribe(function([peer, secret, options1]) {
 			if (!options1) {
