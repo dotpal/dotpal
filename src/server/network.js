@@ -2,76 +2,77 @@ const Network = {}
 {
 	const stringify = JSON.stringify
 	const parse = JSON.parse
-	const comm_port = 2024
-	const face_port = 8000
-	const host = '192.168.1.165'
-	const listeners = {}
-	Network.receive = function(key) {
-		Debug.log('new listener', key)
-		if (listeners[key] !== undefined) {
-			return listeners[key]
-		}
-		return listeners[key] = Signal.create() // wtf lol
-	}
-	//const net = require('net')
-	const fs = require('fs')
-	const http = require('http')
-	const ws = require('ws')
-	const face_server = http.createServer(function(request, response) {
-		//response.setHeader('Access-Control-Allow-Origin', '*') // idk if this is needed
-		response.setHeader('Content-Type', 'text/html')
-		response.end(fs.readFileSync('build/index.html'))
-	})
-	Network.connect = Signal.create()
-	Network.close = Signal.create()
-	Network.error = Signal.create()
-	//const comm_server = new ws.WebSocketServer({server: face_server})
-	const comm_server = new ws.WebSocketServer({port: comm_port})
-	const sockets = []
-	Network.send = function(values) {
-		for (const id in sockets) {
-			if (sockets[id] !== undefined) {
-				Debug.log('send', stringify(values))
-				sockets[id].send(stringify(values))
-			}
-		}
-	}
-	Network.send_but = function(ignore_socket, values) {
-		for (const id in sockets) {
-			if (sockets[id] !== undefined && sockets[id] !== ignore_socket) {
-				Debug.log('send', stringify(values))
-				sockets[id].send(stringify(values))
-			}
-		}
-	}
-	Network.share = function(socket, values) {
-		socket.send(stringify(values))
-	}
-	let netizens = 0
-	let index = 0
-	comm_server.on('connection', function(socket) {
-		++netizens
-		Network.connect.call([socket])
-		socket.send(stringify(['netizens', netizens]))
-		const id = ++index
-		sockets[id] = socket
-		socket.on('close', function() {
-			sockets[id] = undefined
-			--netizens
-		})
-		socket.on('message', function(message) {
-			const [key, ...values] = parse(message.toString())
+	Network.create = function(host, comm_port, face_port) {
+		const self = {}
+		const listeners = {}
+		self.receive = function(key) {
+			Debug.log('new listener', key)
 			if (listeners[key] !== undefined) {
-				values.unshift(socket)
-				listeners[key].call(values)
+				return listeners[key]
 			}
-			else {
-				Debug.log('no key', key)
-			}
+			return listeners[key] = Signal.create() // wtf lol
+		}
+		//const net = require('net')
+		const fs = require('fs')
+		const http = require('http')
+		const ws = require('ws')
+		const face_server = http.createServer(function(request, response) {
+			//response.setHeader('Access-Control-Allow-Origin', '*') // idk if this is needed
+			response.setHeader('Content-Type', 'text/html')
+			response.end(fs.readFileSync('build/index.html'))
 		})
-	})
-	Network.listen = function() {
-		face_server.listen(face_port)
+		self.connect = Signal.create()
+		self.close = Signal.create()
+		self.error = Signal.create()
+		//const comm_server = new ws.WebSocketServer({server: face_server})
+		const comm_server = new ws.WebSocketServer({port: comm_port})
+		const sockets = []
+		self.send = function(values) {
+			for (const id in sockets) {
+				if (sockets[id] !== undefined) {
+					Debug.log('send', stringify(values))
+					sockets[id].send(stringify(values))
+				}
+			}
+		}
+		self.send_but = function(ignore_socket, values) {
+			for (const id in sockets) {
+				if (sockets[id] !== undefined && sockets[id] !== ignore_socket) {
+					Debug.log('send', stringify(values))
+					sockets[id].send(stringify(values))
+				}
+			}
+		}
+		self.share = function(socket, values) {
+			socket.send(stringify(values))
+		}
+		let netizens = 0
+		let index = 0
+		comm_server.on('connection', function(socket) {
+			++netizens
+			self.connect.call([socket])
+			socket.send(stringify(['netizens', netizens]))
+			const id = ++index
+			sockets[id] = socket
+			socket.on('close', function() {
+				sockets[id] = undefined
+				--netizens
+			})
+			socket.on('message', function(message) {
+				const [key, ...values] = parse(message.toString())
+				if (listeners[key] !== undefined) {
+					values.unshift(socket)
+					listeners[key].call(values)
+				}
+				else {
+					Debug.log('no key', key)
+				}
+			})
+		})
+		self.listen = function() {
+			face_server.listen(face_port)
+		}
+		return self
 	}
 	/*
 	const crypto = require('crypto')
