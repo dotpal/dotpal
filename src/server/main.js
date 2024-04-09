@@ -1,0 +1,4 @@
+const Main = {}
+{
+	Network.listen()
+}

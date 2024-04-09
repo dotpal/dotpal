@@ -76,4 +76,8 @@ const Camera = {}
 		document.body.style.backgroundImage = 'url(_include(globe.png))'
 		document.body.style.backgroundSize = '200vh'
 	}
+	Camera.get_camera = function() {
+		return camera
+	}
+	Stepper.add(Camera.step)
 }

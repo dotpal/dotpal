@@ -1,6 +1,6 @@
 const fs = require('fs')
-const get_data_url = function(file) {
-	const content = fs.readFileSync(file, 'base64')
+const get_data_url = function(folder, file) {
+	const content = fs.readFileSync(folder + file, 'base64')
 	const extension = file.split('.')[1]
 	const type = {
 		jpg: 'image/jpeg',
@@ -11,16 +11,34 @@ const get_data_url = function(file) {
 		return `data:${type};base64,${content}`
 	}
 }
-const replace_data_url = function(content) {
+const replace_data_url = function(folder, content) {
 	return content.replace(/_include\(([^)]*)\)/g, function(match, file) {
-		const data_url = get_data_url('src/' + file)
+		const data_url = get_data_url(folder, file)
 		if (data_url !== undefined) {
 			return data_url
 		}
 		else {
-			return fs.readFileSync('src/' + file, 'utf8')
+			return fs.readFileSync(folder + file, 'utf8')
 		}
 	})
+}
+const process_file = function(folder, file) {
+	let content = fs.readFileSync(folder + file, 'utf8')
+	while (true) {
+		const content1 = content.replace(/_include\(([^)]*)\)/g, function(match, file) {
+			const data_url = get_data_url(folder, file)
+			if (data_url) {
+				return data_url
+			}
+			else {
+				return fs.readFileSync(folder + file, 'utf8')
+			}
+		})
+		if (content === content1) {
+			return content
+		}
+		content = content1
+	}
 }
 const do_it = function(files) {
 	const build_status = {}
@@ -59,8 +77,7 @@ fs.readdir(input_folder, function(error, paths) {
 				}
 			}
 			file.name = match[1]
-			//console.log(replace_data_url('_include("asd")'))
-			file.content = replace_data_url(file.content)
+			file.content = replace_data_url(input_folder, file.content)
 			files.push(file)
 		}
 		else {
@@ -74,3 +91,4 @@ fs.readdir(input_folder, function(error, paths) {
 	}
 	do_it(files)
 })
+//console.log(process_file(input_folder, 'main.js'))

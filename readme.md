@@ -28,16 +28,16 @@ Note that first you need to get the server running. (i.e., execute `app.py`)
 
 1. You'll see the landing page like this.
 
-![](images_readme/1.png)
+![](assets/1.png)
 
 1. Expand the Read Users endpoint section.
 
-![](images_readme/2.png)
+![](assets/2.png)
 
 3. Click `Try it out` button.
 
-![](images_readme/3.png)
+![](assets/3.png)
 
 4. Call the endpoint by clicking `Execute` button, and then you will see the responses from it. (JSON)
 
-![](images_readme/4.png)
+![](assets/4.png)

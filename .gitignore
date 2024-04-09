@@ -1,5 +1,4 @@
-blub/
 build/
+bun.lockb
 node_modules/
-package-lock.json
-user/
+state.json
