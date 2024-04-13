@@ -1,23 +1,23 @@
-const StateManager = {}
+const SaveManager = {}
 {
 	const fs = require('fs')
-	StateManager.create = function(path) {
+	SaveManager.create = (path) => {
 		const self = {}
 		// the file might not exist so we should cover that later
 		const state = JSON.parse(fs.readFileSync(path, 'utf8'))
-		const save = function() {
+		const save = () => {
 			fs.writeFileSync(path, JSON.stringify(state), 'utf8')
 		}
-		self.push = function(...values) {
+		self.push = (...values) => {
 			Debug.log('push', path, ...values)
 			state.push(...values)
 			save()
 		}
-		self.get_state = function() {
+		self.get_state = () => {
 			return state
 		}
 		// idk if this should be done externally or not but whatever
-		process.on('exit', function() {
+		process.on('exit', () => {
 			Debug.log('oof we closed time to save the state xd')
 			save()
 		})

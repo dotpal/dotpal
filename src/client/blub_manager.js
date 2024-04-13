@@ -1,4 +1,4 @@
-const BlubManager = {}
+const PostViewer = {}
 {
 	const random = Math.random
 	const pow = Math.pow
@@ -7,17 +7,13 @@ const BlubManager = {}
 	const sqrt = Math.sqrt
 	const exp = Math.exp
 	const or = Logic.or
-	BlubManager.create = function(options) {
-		const camera = options.camera || Debug.log('oof no camera')
-		const network = options.network || Debug.log('oof no network')
-		const blubs = []
-		onclick = function(event) {
-			if (event.target.tagName === 'HTML') {
-				camera.focus(undefined)
-			}
-		}
+	PostViewer.create = (camera) => {
+		const viewer = {}
+		viewer.open = Signal.create()
+		viewer.submit = Signal.create()
+		const bubbles = []
 		const k = 4
-		const get_blub_to_blub_force = function(apx, apy, ar, bpx, bpy, br) {
+		const get_bubble_to_bubble_force = (apx, apy, ar, bpx, bpy, br) => {
 			const ox = bpx - apx
 			const oy = bpy - apy
 			const o = sqrt(ox*ox + oy*oy)
@@ -25,21 +21,19 @@ const BlubManager = {}
 			const ouy = oy/o
 			const px1 = apx + (o - (ar + br) - 0.1)*oux
 			const py1 = apy + (o - (ar + br) - 0.1)*ouy
-			//Debug.point(apx, apy)
 			return [k*(px1 - apx) - 0.1*apx, k*(py1 - apy) - 0.1*apy]
-			//return [k*(bpx - apx), k*(bpy - apy)]
 		}
-		const get_acting_force = function(i0) {
-			if (blubs.length === 1) {
+		const get_acting_force = (i0) => {
+			if (bubbles.length === 1) {
 				return [0, 0]
 			}
-			const blub0 = blubs[i0]
-			const [px0, py0, r0] = blub0.get_geometry()
-			// forces against other blubs
+			const bubble0 = bubbles[i0]
+			const [px0, py0, r0] = bubble0.get_geometry()
+			// forces against other bubbles
 			let min_v = 1/0
 			let min_i = 0
-			for (let i1 = blubs.length; i1--;) {
-				const [px1, py1, r1] = blubs[i1].get_geometry()
+			for (let i1 = bubbles.length; i1--;) {
+				const [px1, py1, r1] = bubbles[i1].get_geometry()
 				if (i1 !== i0) {
 					const distance = sqrt((px1 - px0)*(px1 - px0) + (py1 - py0)*(py1 - py0)) - r0 - r1
 					if (distance < min_v) {
@@ -48,19 +42,20 @@ const BlubManager = {}
 					}
 				}
 			}
-			const [px1, py1, r1] = blubs[min_i].get_geometry()
-			return get_blub_to_blub_force(px0, py0, r0, px1, py1, r1)
+			const [px1, py1, r1] = bubbles[min_i].get_geometry()
+			return get_bubble_to_bubble_force(px0, py0, r0, px1, py1, r1)
 		}
-		BlubManager.open = function(blub) {
-			let editor = undefined
-			if (blub === undefined) {
+		viewer.open.subscribe((bubble) => {
+			let editor
+			// more likely to view posts than create them
+			if (!bubble) {
 				editor = true
 			}
 			else {
 				editor = false
 			}
-			camera.focus(blub)
-			const container = document.createElement('container')
+			camera.focus(bubble)
+			const container = document.createElement('div')
 			document.body.appendChild(container)
 			const form = document.createElement('form')
 			container.appendChild(form)
@@ -68,7 +63,7 @@ const BlubManager = {}
 			icon.src = 'https://qph.cf2.quoracdn.net/main-qimg-407c4b6f60302d6e9c55695adef129e0-pjlq'
 			form.appendChild(icon)
 			const title = document.createElement('textarea')
-			title.cols = 25
+			title.cols = 24
 			title.placeholder = 'title'
 			title.readOnly = !editor
 			title.required = true
@@ -83,74 +78,81 @@ const BlubManager = {}
 			description.rows = 24
 			form.appendChild(description)
 			form.appendChild(document.createElement('br'))
-			if (blub) {
-				title.value = blub.get_title()
-				description.value = blub.get_description()
+			if (bubble) {
+				title.value = bubble.get_title()
+				description.value = bubble.get_description()
 			}
-			const close_menu = function() {
+			viewer.close = () => {
 				container.remove()
-				camera.focus(undefined)
+				camera.focus()
+			}
+			const close = document.createElement('button')
+			close.textContent = 'close'
+			form.appendChild(close)
+			close.onclick = (event) => {
+				viewer.close()
+			}
+			container.onclick = (event) => {
+				if (event.target === container) {
+					viewer.close()
+				}
 			}
 			if (editor) {
 				const publish = document.createElement('button')
-				publish.innerHTML = 'publish'
+				publish.textContent = 'publish'
 				form.appendChild(publish)
-				form.onsubmit = function(event) {
+				form.onsubmit = (event) => {
 					event.preventDefault()
-					close_menu()
 					const options = {}
 					options.description = description.value
 					options.title = title.value
-					//Debug.log(User.get_id)
-					//options.user = User.get_id()
-					self.create(options)
+					viewer.submit.call(options)
 				}
 			}
 			else {
-				const comment = document.createElement('form')
-				container.appendChild(comment)
-				const asd = document.createElement('a')
-				asd.innerHTML = 'asd'
-				comment.appendChild(asd)
-			}
-			const close = document.createElement('button')
-			close.innerHTML = 'close'
-			form.appendChild(close)
-			close.onclick = function(event) {
-				close_menu()
-			}
-			container.onclick = function(event) {
-				if (event.target === container) {
-					close_menu()
+				/*
+				const comments = document.createElement('form')
+				container.appendChild(comments)
+				const comment = document.createElement('p')
+				comment.textContent = 'comment'
+				comments.appendChild(comment)
+				*/
+				const reply = document.createElement('button')
+				reply.textContent = 'reply'
+				reply.onclick = (event) => {
+					event.preventDefault()
 				}
+				form.appendChild(reply)
 			}
-		}
-		self.step = function(dt) {
-			for (let i = blubs.length; i--;) {
-				const blub = blubs[i]
-				const [fx, fy] = get_acting_force(i)
-				blub.set_force(fx, fy)
-				blub.step(dt)
-			}
+		})
+		viewer.step = (dt) => {
 			// camera focus
-			// maybe our code should be "pull only" so we dont allow this pushing behavior
-			for (let i = blubs.length; i--;) {
-				const [px, py, vx, vy, r] = blubs[i].get_state()
+			// maybe our code should be 'pull only' so we dont allow this pushing behavior
+			for (let i = bubbles.length; i--;) {
+				const bubble = bubbles[i]
+				const [fx, fy] = get_acting_force(i)
+				bubble.set_force(fx, fy)
+				bubble.step(dt)
+				const [px, py, vx, vy, r] = bubble.get_state()
 				const h = exp(-dt)
-				blubs[i].set_state(undefined, undefined, h*vx, h*vy)
+				const elapsed = new Date().getTime() - bubble.get_time()
+				bubble.set_state(undefined, undefined, h*vx, h*vy, exp(-0.0000001*elapsed))
 				camera.push_focus_region(px, py, r)
 			}
 		}
-		self.step = self.step
-		self.create = function(options, local) {
-			if (local === undefined) {
-				local = false
-				network.send(['blub', options])
+		viewer.clear = () => {
+			for (const i in bubbles) {
+				bubbles[i].remove()
 			}
-			else {
-				local = true
-			}
-			const self = {}
+		}
+		const create = document.createElement('button')
+		create.textContent = 'create'
+		document.body.appendChild(create)
+		create.onclick = () => {
+			viewer.open.call()
+		}
+		viewer.create = (options) => {
+			const bubble = {}
 			let px = random()
 			let py = random()
 			let vx = 0
@@ -159,71 +161,65 @@ const BlubManager = {}
 			let fx, fy
 			const link = document.createElement('a')
 			document.body.appendChild(link)
-			blubs.push(self)
-			self.get_title = function() {
+			bubbles.push(bubble)
+			bubble.get_title = () => {
 				return options.title
 			}
-			self.get_description = function() {
+			bubble.get_description = () => {
 				return options.description
 			}
-			link.onclick = function(event) {
-				BlubManager.open(self)
+			bubble.get_time = () => {
+				return options.time
 			}
-			const text = self.get_title()
-			const blub = document.createElement('blub')
-			blub.innerHTML = text.split('\n')[0].substr(0, 12) // this cannot be textcontext
-			link.appendChild(blub)
-			self.present = function() {
+			link.onclick = (event) => {
+				viewer.open.call(bubble)
+			}
+			const text = bubble.get_title()
+			const sprite = document.createElement('bubble')
+			sprite.textContent = text.split('\n')[0].substr(0, 12) // this cannot be textcontext
+			link.appendChild(sprite)
+			const present = () => {
 				const [cpx, cpy, cpz] = camera.get_geometry()
-				blub.style.left = 100*(0.5*innerWidth/innerHeight + (px - r - cpx)/cpz) + 'vh' // fucking stupid percentages
-				blub.style.top = 100*(0.5 + (py - r - cpy)/cpz) + 'vh'
-				blub.style.width = 100*2*r/cpz + 'vh'
-				blub.style.height = 100*2*r/cpz + 'vh'
-				blub.style.lineHeight = 100*2*r/cpz + 'vh'
-				blub.style.fontSize = 100*0.3*r/cpz + 'vh'
-				blub.style.backgroundImage = 'url(_include(blub.png))' // this is probably using a lot of memory
+				sprite.style.left = 100*(0.5*innerWidth/innerHeight + (px - r - cpx)/cpz) + 'vh' // fucking stupid percentages
+				sprite.style.top = 100*(0.5 + (py - r - cpy)/cpz) + 'vh'
+				sprite.style.width = 100*2*r/cpz + 'vh'
+				sprite.style.height = 100*2*r/cpz + 'vh'
+				sprite.style.lineHeight = 100*2*r/cpz + 'vh'
+				sprite.style.fontSize = 100*0.3*r/cpz + 'vh'
+				sprite.style.backgroundImage = 'url(_include(bubble.png))' // this is probably using a lot of memory
 			}
-			self.get_geometry = function() {
+			bubble.get_geometry = () => {
 				return [px, py, r]
 			}
-			self.set_state = function(px1, py1, vx1, vy1, r1) {
+			bubble.set_state = (px1, py1, vx1, vy1, r1) => {
 				px = or(px1, px)
 				py = or(py1, py)
 				vx = or(vx1, vx)
 				vy = or(vy1, vy)
 				r = or(r1, r)
-				//self.present()
+				present()
 			}
-			self.set_force = function(fx1, fy1) {
+			bubble.set_force = (fx1, fy1) => {
 				fx = fx1
 				fy = fy1
 			}
-			self.step = function(dt) {
+			bubble.step = (dt) => {
 				// double integrate constant acceleration to get position
 				px = px + dt*vx + 0.5*dt*dt*fx
 				py = py + dt*vy + 0.5*dt*dt*fy
 				vx = vx + dt*fx
 				vy = vy + dt*fy
-				self.present()
+				// present()
 			}
-			self.get_state = function() {
+			bubble.get_state = () => {
 				return [px, py, vx, vy, r]
 			}
-			self.remove = function() {
-				blub.remove()
-				blubs.splice(blubs.indexOf(self), 1)
+			bubble.remove = () => {
+				sprite.remove()
+				bubbles.splice(bubbles.indexOf(bubble), 1)
 			}
-			return self
+			return bubble
 		}
-		const create = document.createElement('button')
-		create.innerHTML = 'create'
-		document.body.appendChild(create)
-		create.onclick = function() {
-			BlubManager.open()
-		}
-		network.receive('blub').subscribe(function([peer, options]) {
-			self.create(options, null)
-		})
-		return self
+		return viewer
 	}
 }

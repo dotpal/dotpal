@@ -1,16 +1,16 @@
 const Logic = {}
 {
-	const is = function(v) {
+	const is = (v) => {
 		return v !== undefined
 	}
 	Logic.is = is
-	const and = function(a, b) {
+	const and = (a, b) => {
 		if (is(a) && is(b)) {
 			return b
 		}
 	}
 	Logic.and = and
-	const or = function(a, b) {
+	const or = (a, b) => {
 		if (is(a)) {
 			return a
 		}

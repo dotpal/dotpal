@@ -1,15 +1,15 @@
 const Stepper = {}
 {
-	Stepper.create = function() {
+	Stepper.create = () => {
 		const self = {}
 		const steppers = []
-		self.add = function(step) {
+		self.add = (step) => {
 			steppers.push(step)
 		}
-		self.run = function() {
+		self.run = () => {
 			const min = Math.min
 			let t0 = 0.001*performance.now()
-			const update = function() {
+			const update = () => {
 				const t = 0.001*performance.now()
 				const dt = min(t - t0, 0.03)
 				t0 = t

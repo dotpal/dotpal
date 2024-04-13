@@ -4,16 +4,16 @@ const Spring = {}
 	const sin = Math.sin
 	const exp = Math.exp
 	const sqrt = Math.sqrt
-	Spring.create = function(p, v, k, d) {
+	Spring.create = (p, v, k, d) => {
 		const self = {}
 		const t = 0
-		self.step = function(dt) {
+		self.step = (dt) => {
 			t += dt
 		}
-		self.update = function(t1) {
+		self.update = (t1) => {
 			t = t1
 		}
-		self.evaluate = function() {
+		self.evaluate = () => {
 			const h = sqrt(1 - d*d)
 			const t = t*h*k // not really correct but whatever
 			const s = sin(t)

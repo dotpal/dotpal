@@ -7,7 +7,7 @@ const Zeros = {}
 	const is = Logic.is
 	const epsilon = 1e-10
 	// solve results are guaranteed real && sorted.
-	const solve = function(a, b, c, d, e) {
+	const solve = (a, b, c, d, e) => {
 		if (is(a) && -epsilon < a && a < epsilon) {
 			return solve(b, c, d, e)
 		}

@@ -1,7 +1,7 @@
 const Cast = {}
 {
 	const sqrt = Math.sqrt
-	Cast.get_circle_onto_circle_intersection_time = function(apx, apy, avx, avy, ar, bpx, bpy, bvx, bvy, br) {
+	Cast.get_circle_onto_circle_intersection_time = (apx, apy, avx, avy, ar, bpx, bpy, bvx, bvy, br) => {
 		const avav = avx*avx + avy*avy
 		const avap = avx*apx + avy*apy
 		const avbv = avx*bvx + avy*bvy

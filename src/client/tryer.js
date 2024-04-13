@@ -1,12 +1,12 @@
 const Tryer = {}
 {
 	// idk for now but whatever
-	Tryer.create = function(passer) {
+	Tryer.create = (passer) => {
 		const self = {}
 		const signals = {}
 		signals[false] = Signal.create()
 		signals[true] = Signal.create()
-		self.pass = function(callback) {
+		self.pass = (callback) => {
 			const [passed, ...values] = passer()
 			const connection = signals[true].subscribe(callback)
 			if (passed === true) {
@@ -15,7 +15,7 @@ const Tryer = {}
 			}
 			return connection
 		}
-		self.fail = function(callback) {
+		self.fail = (callback) => {
 			const [passed, ...values] = passer()
 			const connection = signals[false].subscribe(callback)
 			if (passed === false) {
@@ -24,10 +24,7 @@ const Tryer = {}
 			}
 			return connection
 		}
-		self.check = function(extra) {
-			if (extra === undefined) {
-				extra = []
-			}
+		self.check = (extra) => {
 			const [passed, ...values] = passer()
 			signals[passed].call(values.concat(extra))
 		}

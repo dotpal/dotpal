@@ -1,31 +1,31 @@
 const Signal = {}
 {
-	Signal.create = function() {
+	Signal.create = () => {
 		const signal = {}
 		let connections = []
-		signal.once = function(callback) {
+		signal.once = (callback) => {
 			let temporary
-			temporary = signal.subscribe(function(values) {
+			temporary = signal.subscribe((values) => {
 				callback(values)
 				temporary.remove()
 			})
 			return temporary
 		}
-		signal.subscribe = function(callback) {
+		signal.subscribe = (callback) => {
 			const connection = {}
 			connections.push(connection)
-			connection.remove = function() {
+			connection.remove = () => {
 				connections.splice(connections.indexOf(connection), 1)
 			}
 			connection.call = callback
 			return connection
 		}
-		signal.call = function(values) {
+		signal.call = (values) => {
 			for (const i in connections) {
 				connections[i].call(values)
 			}
 		}
-		signal.remove = function() {
+		signal.remove = () => {
 			for (const i in connections) {
 				connections[i].remove()
 			}

@@ -1,12 +1,15 @@
 * {
 	backface-visibility: hidden;
+	border-radius: 2vh;
+	border-style: none;
+	border: none;
 	font-size: 2vh;
 	image-rendering: pixelated;
 	margin: 0;
 	text-rendering: optimizeSpeed;
 }
-blub {
-	animation: fun 2s;
+bubble {
+	animation: fun 1s;
 	background-repeat: no-repeat; /* maybe this is faster */
 	background-size: 100%;
 	cursor: pointer;
@@ -25,27 +28,26 @@ debug {
 	background-color: #ff00ff;
 	position: fixed;
 }
-container {
+div {
 	align-items: center;
 	background-color: rgba(0, 0, 0, 0.2);
 	display: flex;
 	flex-direction: column;
 	height: 100%;
-	justify-content: center;
+	justify-content: safe center;
 	left: 0;
+	overflow: auto;
 	position: fixed;
 	top: 0;
 	width: 100%;
 }
 button {
 	background-color: #e65a99; /* 90% */
-	border-radius: 2vh;
-	border-style: none;
 	color: #ffffff;
 	cursor: pointer;
 	margin-right: 2vh;
 	padding: 2vh;
-	transition: all 180ms;
+	transition: all 0.18s;
 }
 button:hover {
 	background-color: #ff63a9; /* 100% */
@@ -53,17 +55,16 @@ button:hover {
 	box-shadow: 0vh 0.5vh #e65a99; /* 90% */
 }
 form {
+	animation: fun 0.2s;
 	background-color: #ffffff; /* 100% */
-	border-radius: 2vh;
 	box-shadow: 0vh 0.5vh #e6e6e6; /* 90% */
 	padding-bottom: 2vh;
 	padding-left: 2vh;
 	padding-top: 2vh;
+	margin-top: 2vh;
 }
 textarea {
 	background-color: #f2f2f2; /* 95% */
-	border-radius: 2vh;
-	border: none;
 	margin-bottom: 2vh;
 	margin-right: 2vh;
 	padding: 2vh;

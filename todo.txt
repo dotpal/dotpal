@@ -3,22 +3,25 @@ x set icons for user
 - attach images to posts
 - attach links to posts (they should be clickable after posting)
 - create posts on blubs like threads on twitter
-- blubs get smaller over time as they approach their expiration date
+x blubs get smaller over time as they approach their expiration date
 - blub should grow as people comment, interact, follow, etc. the blub
 x posts should have descriptions
 - post expiration date
 - bubble should disappear from expiration date
 - posts should have timestamps
 - posts should have user who posted
-- encode the coordinates, the timestamps, etc. for posts
-- default the location to hiroshima university of location services are off
-- you should only be able to post at your location
+x encode the coordinates, the timestamps, etc. for posts
+x default the location to hiroshima university of location services are off
+x you should only be able to post at your location
 - follow people
 - notification inbox
 - dont make it rely on fs (save index.html into memory on the server)
 x make the build process more automatic so we dont need to define includes
 - users should have locations on their profile
 - make people appear on the map live
+- bubble visits over time
+- account creation dates
+- get which bubbles are clicked be each user
 
 [todo soon now]
 x send in chat a preview of the current version for taishi

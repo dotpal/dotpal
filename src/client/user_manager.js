@@ -1,36 +1,36 @@
 const UserManager = {}
 {
-	UserManager.create = function(options) {
+	UserManager.create = (options) => {
 		const camera = options.camera || Debug.log('oof no camera')
 		const network = options.network || Debug.log('oof no network')
 		const self = {}
-		self.open = function() {
-			const container = document.createElement('container')
+		self.open = () => {
+			const container = document.createElement('div')
 			document.body.appendChild(container)
 			const form = document.createElement('form')
 			container.appendChild(form)
 			const username = document.createElement('textarea')
-			username.cols = 24
+			username.cols = 32
 			username.placeholder = 'username'
 			username.rows = 1
 			form.appendChild(username)
 			form.appendChild(document.createElement('br'))
 			const icon_url = document.createElement('textarea')
-			icon_url.cols = 24
+			icon_url.cols = 32
 			icon_url.placeholder = 'icon_url'
 			icon_url.rows = 1
 			form.appendChild(icon_url)
 			form.appendChild(document.createElement('br'))
 			const bio = document.createElement('textarea')
-			bio.cols = 24
+			bio.cols = 32
 			bio.placeholder = 'bio'
 			bio.rows = 12
 			form.appendChild(bio)
 			form.appendChild(document.createElement('br'))
 			const save = document.createElement('button')
-			save.innerHTML = 'save'
+			save.textContent = 'save'
 			form.appendChild(save)
-			form.onsubmit = function(event) {
+			form.onsubmit = (event) => {
 				event.preventDefault()
 				container.remove()
 				const options = {}
@@ -40,24 +40,24 @@ const UserManager = {}
 				network.send(['user', document.cookie, options])
 			}
 			const close = document.createElement('button')
-			close.innerHTML = 'close'
+			close.textContent = 'close'
 			form.appendChild(close)
-			close.onclick = function(event) {
+			close.onclick = (event) => {
 				container.remove()
 			}
-			container.onclick = function(event) {
+			container.onclick = (event) => {
 				if (event.target === container) {
 					container.remove()
 				}
 			}
 		}
 		const settings = document.createElement('button')
-		settings.innerHTML = 'settings'
+		settings.textContent = 'settings'
 		document.body.appendChild(settings)
-		settings.onclick = function() {
+		settings.onclick = () => {
 			self.open()
 		}
-		self.secret = Tryer.create(function() {
+		self.secret = Tryer.create(() => {
 			if (document.cookie !== '') {
 				return [true, document.cookie]
 			}
@@ -65,9 +65,9 @@ const UserManager = {}
 				return [false]
 			}
 		})
-		self.secret.fail(function() {
+		self.secret.fail(() => {
 			camera.go_away()
-			const container = document.createElement('container')
+			const container = document.createElement('div')
 			document.body.appendChild(container)
 			const form = document.createElement('form')
 			container.appendChild(form)
@@ -84,17 +84,17 @@ const UserManager = {}
 			form.appendChild(password)
 			const start = document.createElement('button')
 			form.appendChild(document.createElement('br'))
-			start.innerHTML = 'start'
+			start.textContent = 'start'
 			form.appendChild(start)
 			const close = document.createElement('button')
-			close.innerHTML = 'close'
-			close.onclick = function() {
+			close.textContent = 'close'
+			close.onclick = () => {
 				container.remove()
 			}
 			form.appendChild(close)
-			form.onsubmit = function() {
+			form.onsubmit = () => {
 				container.remove()
-				Hash.digest(email.value + password.value).then(function(secret) {
+				Hash.digest(email.value + password.value).then((secret) => {
 					document.cookie = secret
 					const options = {}
 					options.email = email.value
@@ -102,18 +102,18 @@ const UserManager = {}
 				})
 			}
 		})
-		self.secret.pass(function([secret, options]) {
+		self.secret.pass(([secret, options]) => {
 			network.send(['user', secret, options])
-			network.receive('login').subscribe(function([peer, options]) {
-				Debug.log('received options', options)
+			network.receive('login').subscribe(([peer, options]) => {
+				// Debug.log('received options', options)
 				camera.come_back()
-				self.get_id = function() {
+				self.get_id = () => {
 					return secret
 				}
 			})
 		})
 		// this is stupid as fuck
-		self.logout = function() {
+		self.logout = () => {
 			const cookies = document.cookie.split(';')
 			for (let i = 0; i < cookies.length; ++i) {
 				const cookie = cookies[i]
