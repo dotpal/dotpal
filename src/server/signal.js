@@ -5,13 +5,13 @@ const Signal = {}
 		let connections = []
 		signal.once = (callback) => {
 			let temporary
-			temporary = signal.subscribe((values) => {
+			temporary = signal.tie((values) => {
 				callback(values)
 				temporary.remove()
 			})
 			return temporary
 		}
-		signal.subscribe = (callback) => {
+		signal.tie = (callback) => {
 			const connection = {}
 			connections.push(connection)
 			connection.remove = () => {

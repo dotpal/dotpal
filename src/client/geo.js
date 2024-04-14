@@ -1,4 +1,4 @@
-const GeoManager = {}
+const Geo = {}
 {
 	const PI = Math.PI
 	const deg = PI/180
@@ -8,7 +8,7 @@ const GeoManager = {}
 	const mod = (x, y) => {
 		return x - floor(x/y)*y
 	}
-	GeoManager.create = () => {
+	Geo.create = () => {
 		const self = {}
 		let cx, cy
 		self.position = State.create()
@@ -36,7 +36,7 @@ const GeoManager = {}
 				Debug.log('geolocation is not supported by this browser') // this sounds like a bad assumption
 			}
 		}
-		self.position.subscribe(set_position)
+		self.position.tie(set_position)
 		// self.step = (dt) => {
 		// 	cx += (1 - exp(-4*dt))*(cx- cx)
 		// 	cy += (1 - exp(-4*dt))*(cy - cy)

@@ -8,7 +8,7 @@ const Tryer = {}
 		signals[true] = Signal.create()
 		self.pass = (callback) => {
 			const [passed, ...values] = passer()
-			const connection = signals[true].subscribe(callback)
+			const connection = signals[true].tie(callback)
 			if (passed === true) {
 				signals[true].call(values)
 				//connection.remove()
@@ -17,7 +17,7 @@ const Tryer = {}
 		}
 		self.fail = (callback) => {
 			const [passed, ...values] = passer()
-			const connection = signals[false].subscribe(callback)
+			const connection = signals[false].tie(callback)
 			if (passed === false) {
 				signals[false].call(values)
 				//connection.remove()

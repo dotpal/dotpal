@@ -38,9 +38,9 @@ const Debug = {}
 	}
 	Debug.benchmark = (name) => {
 		const idk = {}
-		const t0 = performance.now()
+		const t0 = get_time()
 		idk.end = () => {
-			const t1 = performance.now()
+			const t1 = get_time()
 			Debug.log(name, t1 - t0, 'ms')
 		}
 		return idk

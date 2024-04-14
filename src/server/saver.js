@@ -1,7 +1,7 @@
-const SaveManager = {}
+const Saver = {}
 {
 	const fs = require('fs')
-	SaveManager.create = (path) => {
+	Saver.create = (path) => {
 		const self = {}
 		// the file might not exist so we should cover that later
 		const state = JSON.parse(fs.readFileSync(path, 'utf8'))

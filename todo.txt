@@ -25,3 +25,9 @@ x make the build process more automatic so we dont need to define includes
 
 [todo soon now]
 x send in chat a preview of the current version for taishi
+
+[design]
+- don't dig into objects because they know how to do it more efficiently than you do
+	- given this, things should be well-exposed, and the exposed functions define the toolset.
+	- fetch-based, not push-based
+- things that are dependent on each other in some way shouldn't describe that dependent behavior in different files, for example, settings and post create button are being created in different files, but thats wrong, because the design of those two things depend on one another. so they should be created from a centralized location. Which also makes sense because it describes "dotpal" or "dotpal interface," not user & post.

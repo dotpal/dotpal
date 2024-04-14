@@ -18,7 +18,6 @@ const Camera = {}
 		let lx = +1/0
 		let ly = +1/0
 		let pushed = 0
-		let go_away = false
 		onclick = (event) => {
 			if (event.target === document.documentElement) {
 				camera.focus()
@@ -26,15 +25,6 @@ const Camera = {}
 		}
 		camera.focus = (subject) => {
 			target = subject
-		}
-		camera.go_away = () => {
-			go_away = true
-		}
-		camera.come_back = () => {
-			go_away = false
-			px = 0
-			py = 0
-			pz = 0
 		}
 		camera.get_geometry = () => {
 			return [px, py, pz]
@@ -56,41 +46,22 @@ const Camera = {}
 			ly = +1/0
 		}
 		camera.step = (dt) => {
-			if (!go_away) {
-				if (target) {
-					let r
-					[px1, py1, r] = target.get_geometry()
-					pz1 = 4*r
-				}
-				else if (pushed > 0) { // this is horrible lmao
-					camera.pop_focus_regions()
-				}
-				// const h = exp(-4*dt)
-				// px = px1 + h*(px - px1)
-				// py = py1 + h*(py - py1)
-				// pz = pz1 + h*(pz - pz1)
-				px = px1
-				py = py1
-				pz = pz1
+			if (target) {
+				let r
+				[px1, py1, r] = target.get_geometry()
+				pz1 = 4*r
 			}
-			else {
-				px = 1e8
-				py = 0
-				pz = 0
+			else if (pushed > 0) { // this is horrible lmao
+				camera.pop_focus_regions()
 			}
+			// const h = exp(-4*dt)
+			// px = px1 + h*(px - px1)
+			// py = py1 + h*(py - py1)
+			// pz = pz1 + h*(pz - pz1)
+			px = px1
+			py = py1
+			pz = pz1
 			// this is so stupid lmao
-			if (px !== px) {
-				px = 0
-				py = 0
-				pz = 10
-			}
-			// document.body.style.backgroundPosition = 'center center'
-			// document.body.style.backgroundPosition = -100*px/pz + 'vh' + ' ' + -100*py/pz + 'vh'
-			// document.body.style.backgroundSize = 10*200/pz + 'vh'
-			// document.body.style.transform = ''
-			document.body.style.backgroundColor = '#e6e6e6'
-			document.body.style.backgroundImage = 'url(_include(globe.png))'
-			document.body.style.backgroundSize = '200vh'
 		}
 		return camera
 	}

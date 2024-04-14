@@ -8,9 +8,9 @@ const Stepper = {}
 		}
 		self.run = () => {
 			const min = Math.min
-			let t0 = 0.001*performance.now()
+			let t0 = get_time()
 			const update = () => {
-				const t = 0.001*performance.now()
+				const t = get_time()
 				const dt = min(t - t0, 0.03)
 				t0 = t
 				for (const i in steppers) {

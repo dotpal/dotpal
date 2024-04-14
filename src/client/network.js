@@ -35,7 +35,7 @@ const Network = {}
 			queue.push(values)
 		}
 		// then when the network finally connects, well dump them all out
-		self.connect.subscribe(() => {
+		self.connect.tie(() => {
 			//Debug.log('connected to the network')
 			self.send = (values) => {
 				//Debug.log('send', values)
@@ -48,7 +48,7 @@ const Network = {}
 		const netizens = document.createElement('value')
 		netizens.value = 'settings'
 		document.body.appendChild(netizens)
-		self.receive('netizens').subscribe(([peer, netizens]) => {
+		self.receive('netizens').tie(([peer, netizens]) => {
 			// Debug.log('users online is', netizens)
 		})
 		return self
