@@ -2,16 +2,16 @@ const State = {}
 {
 	State.create = () => {
 		let current
-		const self = {}
+		const state = {}
 		const set = Signal.create()
 		set.tie((values) => {
 			current = values
 		})
-		self.set = set.call
-		self.tie = set.tie
-		self.get = () => {
+		state.set = set.call
+		state.tie = set.tie
+		state.get = () => {
 			return current
 		}
-		return self
+		return state
 	}
 }

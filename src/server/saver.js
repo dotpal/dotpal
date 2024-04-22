@@ -1,26 +1,24 @@
 const Saver = {}
 {
 	const fs = require('fs')
+	const parse = JSON.parse
+	const stringify = JSON.stringify
 	Saver.create = (path) => {
-		const self = {}
-		// the file might not exist so we should cover that later
-		const state = JSON.parse(fs.readFileSync(path, 'utf8'))
-		const save = () => {
-			fs.writeFileSync(path, JSON.stringify(state), 'utf8')
+		const saver = {}
+		if (!fs.existsSync(path)) {
+			Debug.log('save file', path, 'doesnt exist creating it')
+			fs.writeFileSync(path, '[]')
 		}
-		self.push = (...values) => {
-			Debug.log('push', path, ...values)
+		const state = parse(fs.readFileSync(path, 'utf8'))
+		saver.save = () => {
+			fs.writeFileSync(path, stringify(state), 'utf8')
+		}
+		saver.push = (...values) => {
 			state.push(...values)
-			save()
 		}
-		self.get_state = () => {
+		saver.get_state = () => {
 			return state
 		}
-		// idk if this should be done externally or not but whatever
-		process.on('exit', () => {
-			Debug.log('oof we closed time to save the state xd')
-			save()
-		})
-		return self
+		return saver
 	}
 }

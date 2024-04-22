@@ -1,33 +1,25 @@
 const Network = {}
 {
-	const stringify = JSON.stringify
+	const fs = require('fs')
+	const http = require('http')
+	const ws = require('ws')
 	const parse = JSON.parse
-	Network.create = (host, comm_port, face_port) => {
-		const self = {}
-		const listeners = {}
-		self.receive = (key) => {
-			Debug.log('new listener', key)
-			if (listeners[key]) {
-				return listeners[key]
-			}
-			return listeners[key] = Signal.create() // wtf lol
-		}
-		//const net = require('net')
-		const fs = require('fs')
-		const http = require('http')
-		const ws = require('ws')
+	const stringify = JSON.stringify
+	Network.create = (host, port) => {
+		const network = {}
+		const listeners = Listeners.create()
+		network.receive = listeners.set
 		const face_server = http.createServer((request, response) => {
 			//response.setHeader('Access-Control-Allow-Origin', '*') // idk if this is needed
 			response.setHeader('Content-Type', 'text/html')
 			response.end(fs.readFileSync('build/index.html'))
 		})
-		self.connect = Signal.create()
-		self.close = Signal.create()
-		self.error = Signal.create()
-		//const comm_server = new ws.WebSocketServer({server: face_server})
-		const comm_server = new ws.WebSocketServer({port: comm_port})
+		network.connect = Signal.create()
+		network.close = Signal.create()
+		network.error = Signal.create()
+		const comm_server = new ws.WebSocketServer({server: face_server})
 		const sockets = []
-		self.send = (values) => {
+		network.send = (values) => {
 			for (const id in sockets) {
 				if (sockets[id]) {
 					Debug.log('send', stringify(values))
@@ -35,7 +27,7 @@ const Network = {}
 				}
 			}
 		}
-		self.send_but = (ignore_socket, values) => {
+		network.send_but = (ignore_socket, values) => {
 			for (const id in sockets) {
 				if (sockets[id] && sockets[id] !== ignore_socket) {
 					Debug.log('send', stringify(values))
@@ -43,14 +35,14 @@ const Network = {}
 				}
 			}
 		}
-		self.share = (socket, values) => {
+		network.share = (socket, values) => {
 			socket.send(stringify(values))
 		}
 		let netizens = 0
 		let index = 0
 		comm_server.on('connection', (socket) => {
 			++netizens
-			self.connect.call([socket])
+			network.connect.call([socket])
 			socket.send(stringify(['netizens', netizens]))
 			const id = ++index
 			sockets[id] = socket
@@ -60,19 +52,18 @@ const Network = {}
 			})
 			socket.on('message', (message) => {
 				const [key, ...values] = parse(message.toString())
-				if (listeners[key]) {
-					values.unshift(socket)
-					listeners[key].call(values)
-				}
-				else {
-					Debug.log('no key', key)
-				}
+				values.unshift(socket)
+				listeners.call(key, values)
 			})
 		})
-		self.listen = () => {
-			face_server.listen(face_port)
+		network.listen = () => {
+			face_server.listen(port)
 		}
-		return self
+		network.close = () => {
+			face_server.close()
+			comm_server.close()
+		}
+		return network
 	}
 	/*
 	const crypto = require('crypto')
@@ -148,13 +139,8 @@ const Network = {}
 				//Debug.log(decode_websocket_frame(data))
 				//Debug.log(parse(data.toString()))
 				const [key, ...values] = parse(data.toString())
-				if (listeners[key]) => {
-					values.unshift(socket)
-					listeners[key].call(values)
-				}
-				else {
-					Debug.log('no key', key)
-				}
+				values.unshift(socket)
+				listeners.call(key, values)
 			})
 		})
 		socket.on('end', () => {

@@ -41,6 +41,16 @@ div {
 	top: 0;
 	width: 100%;
 }
+loading {
+	background-repeat: no-repeat;
+	height: 20vh;
+	left: 50%;
+	position: fixed;
+	top: 50%;
+	width: 20vh;
+	transform: translate(-10vh, -10vh);
+	z-index: 1;
+}
 button {
 	background-color: #e65a99; /* 90% */
 	color: #ffffff;

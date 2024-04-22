@@ -17,6 +17,9 @@ const Debug = {}
 			console.log(...values)
 		}
 	}
+	Debug.error = (...values) => {
+		console.error(...values)
+	}
 	/*
 	Debug.point = (px, py) => {
 		const [cpx, cpy, cpz] = Camera.get_geometry()
@@ -35,11 +38,6 @@ const Debug = {}
 		element.style.width = '1vh'
 		element.style.height = '1vh'
 		document.body.appendChild(element)
-	}
-	Debug.log = (...values) => {
-		if (debug_mode) {
-			console.log(...values)
-		}
 	}
 	Debug.benchmark = (name) => {
 		const benchy = {}

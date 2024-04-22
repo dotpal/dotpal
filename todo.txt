@@ -1,18 +1,18 @@
 x set username for user
 x set icons for user
-- attach images to posts
-- attach links to posts (they should be clickable after posting)
-- create posts on blubs like threads on twitter
+- attach images to blubs
+- attach links to blubs (they should be clickable after blubbing)
+- create blubs on blubs like threads on twitter
 x blubs get smaller over time as they approach their expiration date
 - blub should grow as people comment, interact, follow, etc. the blub
-x posts should have descriptions
-- post expiration date
+x blubs should have descriptions
+- blub expiration date
 - bubble should disappear from expiration date
-- posts should have timestamps
-- posts should have user who posted
-x encode the coordinates, the timestamps, etc. for posts
+- blubs should have timestamps
+- blubs should have user who blubed
+x encode the coordinates, the timestamps, etc. for blubs
 x default the location to hiroshima university of location services are off
-x you should only be able to post at your location
+x you should only be able to blub at your location
 - follow people
 - notification inbox
 - dont make it rely on fs (save index.html into memory on the server)
@@ -30,4 +30,4 @@ x send in chat a preview of the current version for taishi
 - don't dig into objects because they know how to do it more efficiently than you do
 	- given this, things should be well-exposed, and the exposed functions define the toolset.
 	- fetch-based, not push-based
-- things that are dependent on each other in some way shouldn't describe that dependent behavior in different files, for example, settings and post create button are being created in different files, but thats wrong, because the design of those two things depend on one another. so they should be created from a centralized location. Which also makes sense because it describes "dotpal" or "dotpal interface," not user & post.
+- things that are dependent on each other in some way shouldn't describe that dependent behavior in different files, for example, settings and blub create button are being created in different files, but thats wrong, because the design of those two things depend on one another. so they should be created from a centralized location. Which also makes sense because it describes "dotpal" or "dotpal interface," not user & blub.

@@ -1,12 +1,12 @@
 const Stepper = {}
 {
 	Stepper.create = () => {
-		const self = {}
+		const stepper = {}
 		const steppers = []
-		self.add = (step) => {
+		stepper.add = (step) => {
 			steppers.push(step)
 		}
-		self.run = () => {
+		stepper.run = () => {
 			const min = Math.min
 			let t0 = get_time()
 			const update = () => {
@@ -20,6 +20,6 @@ const Stepper = {}
 			}
 			requestAnimationFrame(update)
 		}
-		return self
+		return stepper
 	}
 }

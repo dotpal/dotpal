@@ -17,6 +17,9 @@ const Debug = {}
 			console.log(...values)
 		}
 	}
+	Debug.error = (...values) => {
+		console.error(...values)
+	}
 	/*
 	Debug.point = (px, py) => {
 		const [cpx, cpy, cpz] = Camera.get_geometry()
@@ -32,17 +35,17 @@ const Debug = {}
 		const element = document.createElement('debug')
 		element.style.left = 100*px + 'vh'
 		element.style.top = 100*py + 'vh'
-		element.style.width = '1vh'
-		element.style.height = '1vh'
+		element.style.width = '0.5vh'
+		element.style.height = '0.5vh'
 		document.body.appendChild(element)
 	}
 	Debug.benchmark = (name) => {
-		const idk = {}
+		const benchy = {}
 		const t0 = get_time()
-		idk.end = () => {
+		benchy.end = () => {
 			const t1 = get_time()
 			Debug.log(name, t1 - t0, 'ms')
 		}
-		return idk
+		return benchy
 	}
 }
