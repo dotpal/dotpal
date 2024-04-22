@@ -1,4 +1,4 @@
-x set username for user
+x set name for user
 x set icons for user
 - attach images to blubs
 - attach links to blubs (they should be clickable after blubbing)

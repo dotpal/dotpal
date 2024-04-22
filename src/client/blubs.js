@@ -1,6 +1,6 @@
 const Blubs = {}
 {
-	Blubs.create = (network) => {
+	Blubs.create = (network, users) => {
 		const blubs = {}
 		blubs.receive = Signal.create()
 		blubs.create = (options) => {

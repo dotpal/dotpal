@@ -15,6 +15,7 @@ bubble {
 	cursor: pointer;
 	position: fixed;
 	text-align: center;
+	z-index: -1;
 }
 @keyframes fun {
 	from {

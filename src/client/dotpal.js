@@ -4,7 +4,8 @@ const Dotpal = {}
 	const bubbles = Bubbles.create(camera)
 	const geo = Geo.create()
 	const network = Network.create('localhost', 8000)
-	const blubs = Blubs.create(network)
+	const users = Users.create(network)
+	const blubs = Blubs.create(network, users)
 	const stepper = Stepper.create()
 	const loading = {}
 	{
@@ -31,16 +32,20 @@ const Dotpal = {}
 		else {
 			return [false]
 		}
+	},
+	(secret) => {
+		document.cookie = secret
 	})
 	secret.pass(([secret, options]) => {
 		network.send(['user', secret, options])
 	})
+	// users.get_from_id()
 	secret.fail(() => {
 		const login = Login.create(network, camera)
 		login.submit.tie(([email, password]) => {
 			login.remove()
 			Hash.digest(email.value + password.value).then((key) => {
-				document.cookie = key
+				secret.set(key)
 				const options = {}
 				options.email = email.value
 				secret.check([options])
@@ -48,12 +53,12 @@ const Dotpal = {}
 		})
 	})
 	const forget = () => {
-		const cookies = document.cookie.split(';')
+		const cookies = secret.get().split(';')
 		for (let i = cookies.length; i--;) {
 			const cookie = cookies[i]
 			const equal = cookie.indexOf('=')
 			const name = equal > -1 ? cookie.substr(0, equal) : cookie
-			document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT'
+			secret.set(name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT')
 		}
 	}
 	const refresh_feed = (position) => {
@@ -67,13 +72,14 @@ const Dotpal = {}
 		loading.disable()
 		const blub = blubs.create(options)
 		bubbles.create(blub)
+		camera.focus(bubbles.get_bubbles())
 	})
 	bubbles.click.tie((bubble) => {
-		camera.focus(bubble)
+		camera.focus([bubble])
 		const blub = bubble.get_blub()
 		const viewer = Viewer.create(blub)
 		viewer.close.tie(() => {
-			camera.focus()
+			camera.focus(bubbles.get_bubbles())
 		})
 		viewer.reply.tie(() => {
 			const comment = Viewer.create()
@@ -95,14 +101,14 @@ const Dotpal = {}
 			viewer.submit.tie((options) => {
 				viewer.close.call()
 				options.position = geo.position.get()
-				network.send(['blub', options])
+				network.send(['blub', secret.get(), options])
 			})
 		}
 		document.body.appendChild(create)
 		const profile = document.createElement('button')
 		profile.textContent = 'profile'
 		profile.onclick = () => {
-			const profile = Profile.create()
+			const profile = Profile.create(network, secret)
 		}
 		document.body.appendChild(profile)
 	}

@@ -1,16 +1,16 @@
 const Profile = {}
 {
-	Profile.create = (user) => {
+	Profile.create = (network, secret) => {
 		const profile = {}
 		const container = document.createElement('div')
 		document.body.appendChild(container)
 		const form = document.createElement('form')
 		container.appendChild(form)
-		const username = document.createElement('textarea')
-		username.cols = 32
-		username.placeholder = 'username'
-		username.rows = 1
-		form.appendChild(username)
+		const name = document.createElement('textarea')
+		name.cols = 32
+		name.placeholder = 'name'
+		name.rows = 1
+		form.appendChild(name)
 		form.appendChild(document.createElement('br'))
 		const icon = document.createElement('textarea')
 		icon.cols = 32
@@ -33,8 +33,8 @@ const Profile = {}
 			const options = {}
 			options.bio = bio.value
 			options.icon = icon.value
-			options.username = username.value
-			//network.send(['user', document.cookie, options])
+			options.name = name.value
+			network.send(['user', secret.get(), options])
 		}
 		const close = document.createElement('button')
 		close.textContent = 'close'

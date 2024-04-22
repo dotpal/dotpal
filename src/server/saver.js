@@ -2,6 +2,7 @@ const Saver = {}
 {
 	const fs = require('fs')
 	const parse = JSON.parse
+	const random = Math.random
 	const stringify = JSON.stringify
 	Saver.create = (path) => {
 		const saver = {}
@@ -13,11 +14,25 @@ const Saver = {}
 		saver.save = () => {
 			fs.writeFileSync(path, stringify(state), 'utf8')
 		}
-		saver.push = (...values) => {
-			state.push(...values)
+		saver.create = (type) => {
+			const object = {}
+			const id = random()
+			object.time = get_time()
+			object.type = type
+			state[id] = object
+			return object
 		}
 		saver.get_state = () => {
 			return state
+		}
+		saver.source = (entry, attributes) => {
+			const clone = {...entry}
+			for (const j in attributes) {
+				const i = attributes[j]
+				const id = entry[i]
+				clone[i] = {...state[id]}
+			}
+			return clone
 		}
 		return saver
 	}

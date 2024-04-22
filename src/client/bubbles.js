@@ -33,6 +33,9 @@ const Bubbles = {}
 			const [bpx, bpy, br] = all[min_index].get_geometry()
 			return get_bubble_to_bubble_target(apx, apy, ra, bpx, bpy, br)
 		}
+		bubbles.get_bubbles = () => {
+			return all
+		}
 		bubbles.create = (blub) => {
 			const bubble = {}
 			let px = Spring.create()
@@ -83,7 +86,6 @@ const Bubbles = {}
 			return bubble
 		}
 		bubbles.step = (dt) => {
-			// camera focus
 			// maybe our code should be 'pull only' so we dont allow this pushing behavior
 			for (const i in all) {
 				const bubble = all[i]
@@ -92,7 +94,6 @@ const Bubbles = {}
 				const [px, py, r] = bubble.get_geometry()
 				const elapsed = get_time() - bubble.get_blub().get_time()
 				bubble.set_radius(exp(-0.00001*elapsed))
-				camera.push(px, py, r)
 			}
 		}
 		bubbles.clear = () => {

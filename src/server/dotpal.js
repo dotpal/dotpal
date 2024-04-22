@@ -14,46 +14,49 @@ const Dotpal = {}
 			return dx*dx + dy*dy
 		}
 		const database_state = database.get_state()
-		network.receive('blub').tie(([peer, options]) => {
-			const refined = {}
-			refined.children = []
-			refined.description = options.description
-			refined.id = random()
-			refined.depth = 0
-			refined.position = options.position
-			refined.time = get_time()
-			refined.title = options.title
-			refined.type = 'blub'
-			database.push(refined)
-			network.send(['blub', refined])
+		network.receive('blub').tie(([peer, secret, options]) => {
+			for (const id in database_state) {
+				if (database_state[id].secret === secret) {
+					const entry = database.create('blub')
+					entry.children = []
+					entry.description = options.description
+					entry.position = options.position
+					entry.title = options.title
+					entry.user = id
+					network.send(['blub', database.source(entry, ['user'])])
+				}
+			}
 		})
 		network.receive('get_blubs').tie(([peer, position]) => {
-			for (const i in database_state) {
-				const entry = database_state[i]
-				if (entry.type === 'blub' && entry.depth === 0 && get_square_distance(position, entry.position) < 0.001) {
-					const options = entry
-					network.share(peer, ['blub', options])
+			for (const id in database_state) {
+				const entry = database_state[id]
+				if (entry.type === 'blub' && get_square_distance(position, entry.position) < 0.001) {
+					network.share(peer, ['blub', entry])
 				}
 			}
 		})
 	}
 	{
 		const database_state = database.get_state()
-		network.receive('user').tie(([peer, secret, user]) => {
-			user = user || {}
-			for (const i in database_state) {
-				const info = database_state[i]
-				if (info.secret === secret) {
-					network.share(peer, ['login', user])
+		network.receive('user').tie(([peer, secret, options]) => {
+			for (const id in database_state) {
+				const entry = database_state[id]
+				if (entry.secret === secret) {
+					if (options) {
+						entry.bio = options.bio
+						entry.icon = options.icon
+						entry.name = options.name
+					}
+					network.share(peer, ['login', entry])
 					return
 				}
 			}
-			user.bio = 'Hello world!'
-			user.icon = 'https://qph.cf2.quoracdn.net/main-qimg-407c4b6f60302d6e9c55695adef129e0-pjlq'
-			user.secret = secret
-			user.time = get_time()
-			database.push(user)
-			network.share(peer, ['login', user])
+			const entry = database.create('user')
+			entry.bio = 'Hello world!'
+			entry.icon = 'https://qph.cf2.quoracdn.net/main-qimg-407c4b6f60302d6e9c55695adef129e0-pjlq'
+			entry.name = options.name
+			entry.secret = secret
+			network.share(peer, ['login', entry])
 		})
 	}
 	// idk if this should be done externally or not but whatever
@@ -63,5 +66,5 @@ const Dotpal = {}
 	})
 	network.listen()
 }
-//const dotpal = Dotpal.create()
-//dotpal.run()
+// const dotpal = Dotpal.create()
+// dotpal.run()

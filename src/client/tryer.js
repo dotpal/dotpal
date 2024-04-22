@@ -1,7 +1,7 @@
 const Tryer = {}
 {
 	// idk for now but whatever
-	Tryer.create = (passer) => {
+	Tryer.create = (passer, setter) => {
 		const tryer = {}
 		const signals = {}
 		signals[false] = Signal.create()
@@ -27,6 +27,13 @@ const Tryer = {}
 		tryer.check = (extra) => {
 			const [passed, ...values] = passer()
 			signals[passed].call(values.concat(extra))
+		}
+		tryer.get = () => {
+			// return passer().slice(1)
+			return passer()[1]
+		}
+		tryer.set = (value) => {
+			return setter(value)
 		}
 		return tryer
 	}
