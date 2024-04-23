@@ -1,7 +1,7 @@
 const Logic = {}
 {
 	const is = (v) => {
-		return v !== undefined
+		return v != undefined
 	}
 	Logic.is = is
 	const and = (a, b) => {

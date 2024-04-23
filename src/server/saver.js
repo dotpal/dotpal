@@ -10,9 +10,9 @@ const Saver = {}
 			Debug.log('save file', path, 'doesnt exist creating it')
 			fs.writeFileSync(path, '[]')
 		}
-		const state = parse(fs.readFileSync(path, 'utf8'))
+		const state = parse(fs.readFileSync(path))
 		saver.save = () => {
-			fs.writeFileSync(path, stringify(state), 'utf8')
+			fs.writeFileSync(path, stringify(state))
 		}
 		saver.create = (type) => {
 			const object = {}

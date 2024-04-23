@@ -1,6 +1,6 @@
 const Profile = {}
 {
-	Profile.create = (network, secret) => {
+	Profile.create = (user) => {
 		const profile = {}
 		const container = document.createElement('div')
 		document.body.appendChild(container)
@@ -34,7 +34,7 @@ const Profile = {}
 			options.bio = bio.value
 			options.icon = icon.value
 			options.name = name.value
-			network.send(['user', secret.get(), options])
+			user.change(options)
 		}
 		const close = document.createElement('button')
 		close.textContent = 'close'
@@ -43,7 +43,7 @@ const Profile = {}
 			container.remove()
 		}
 		container.onclick = (event) => {
-			if (event.target === container) {
+			if (event.target == container) {
 				container.remove()
 			}
 		}

@@ -28,7 +28,7 @@ const Geo = {}
 				})
 			}
 			else {
-				Debug.log('geolocation is not supported by this browser') // this sounds like a bad assumption
+				Debug.error('geolocation is not supported by this browser') // this sounds like a bad assumption
 			}
 		}
 		// geo.step = (dt) => {

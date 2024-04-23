@@ -15,7 +15,7 @@ const Camera = {}
 		let ly
 		/*
 		onclick = (event) => {
-			if (event.target === document.documentElement) {
+			if (event.target == document.documentElement) {
 				camera.focus()
 			}
 		}

@@ -26,8 +26,8 @@ const Debug = {}
 		const element = document.createElement('debug')
 		element.style.left = 100*(0.5*innerWidth/innerHeight + (px - cpx)/cpz) + 'vh'
 		element.style.top = 100*(0.5 + (py - cpy)/cpz) + 'vh'
-		element.style.width = '1vh'
-		element.style.height = '1vh'
+		element.style.width = '0.5vh'
+		element.style.height = '0.5vh'
 		document.body.appendChild(element)
 	}
 	*/
@@ -35,8 +35,8 @@ const Debug = {}
 		const element = document.createElement('debug')
 		element.style.left = 100*px + 'vh'
 		element.style.top = 100*py + 'vh'
-		element.style.width = '1vh'
-		element.style.height = '1vh'
+		element.style.width = '0.5vh'
+		element.style.height = '0.5vh'
 		document.body.appendChild(element)
 	}
 	Debug.benchmark = (name) => {

@@ -15,13 +15,14 @@ const Bubbles = {}
 	Bubbles.create = (camera) => {
 		const bubbles = {}
 		const all = []
+		bubbles.bubbles = all
 		bubbles.click = Signal.create()
 		const get_acting_target = (ai) => {
 			const [apx, apy, ra] = all[ai].get_geometry()
 			let min_value = 1/0
 			let min_index = 0
 			for (const bi in all) {
-				if (bi !== ai) {
+				if (bi != ai) {
 					const [bpx, bpy, br] = all[bi].get_geometry()
 					const distance = sqrt((bpx - apx)*(bpx - apx) + (bpy - apy)*(bpy - apy)) - ra - br
 					if (min_value > distance) {
@@ -33,11 +34,9 @@ const Bubbles = {}
 			const [bpx, bpy, br] = all[min_index].get_geometry()
 			return get_bubble_to_bubble_target(apx, apy, ra, bpx, bpy, br)
 		}
-		bubbles.get_bubbles = () => {
-			return all
-		}
 		bubbles.create = (blub) => {
 			const bubble = {}
+			bubble.blub = blub
 			let px = Spring.create()
 			let py = Spring.create()
 			let r = 1
@@ -47,9 +46,8 @@ const Bubbles = {}
 			link.onclick = () => {
 				bubbles.click.call(bubble)
 			}
-			const title = blub.get_title()
 			const sprite = document.createElement('bubble')
-			sprite.textContent = title.split('\n')[0].substr(0, 12)
+			sprite.textContent = blub.title.split('\n')[0].substr(0, 12)
 			link.appendChild(sprite)
 			const present = () => {
 				const [cpx, cpy, cpz] = camera.get_geometry()
@@ -60,9 +58,6 @@ const Bubbles = {}
 				sprite.style.lineHeight = 100*2*r/cpz + 'vh'
 				sprite.style.fontSize = 100*0.3*r/cpz + 'vh'
 				sprite.style.backgroundImage = 'url(_include(bubble.png))' // this is probably using a lot of memory
-			}
-			bubble.get_blub = () => {
-				return blub
 			}
 			bubble.set_target = ([tx1, ty1]) => {
 				px.set_target(tx1)
@@ -92,7 +87,7 @@ const Bubbles = {}
 				bubble.set_target(get_acting_target(i))
 				bubble.step(dt)
 				const [px, py, r] = bubble.get_geometry()
-				const elapsed = get_time() - bubble.get_blub().get_time()
+				const elapsed = get_time() - bubble.blub.time
 				bubble.set_radius(exp(-0.00001*elapsed))
 			}
 		}

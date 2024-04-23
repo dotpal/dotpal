@@ -20,8 +20,8 @@ x make the build process more automatic so we dont need to define includes
 - users should have locations on their profile
 - make people appear on the map live
 - bubble visits over time
-- account creation dates
-- get which bubbles are clicked be each user
+x account creation dates
+- get which bubbles are clicked by each user
 
 [todo soon now]
 x send in chat a preview of the current version for taishi

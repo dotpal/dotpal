@@ -13,10 +13,11 @@ const Login = {}
 		email.rows = 1
 		form.appendChild(email)
 		form.appendChild(document.createElement('br'))
-		const password = document.createElement('textarea')
+		const password = document.createElement('input')
 		password.placeholder = 'password'
 		password.required = true
 		password.rows = 1
+		password.type = 'password'
 		form.appendChild(password)
 		const start = document.createElement('button')
 		form.appendChild(document.createElement('br'))

@@ -1,3 +1,4 @@
+const child_process = require('child_process')
 const fs = require('fs')
 const get_data_url = (folder, file) => {
 	const content = fs.readFileSync(folder + file, 'base64')
@@ -7,14 +8,14 @@ const get_data_url = (folder, file) => {
 		png: 'image/png',
 		gif: 'image/gif',
 	}[extension]
-	if (type !== undefined) {
+	if (type) {
 		return `data:${type};base64,${content}`
 	}
 }
 const replace_data_url = (folder, content) => {
 	return content.replace(/_include\(([^)]*)\)/g, (match, file) => {
 		const data_url = get_data_url(folder, file)
-		if (data_url !== undefined) {
+		if (data_url) {
 			return data_url
 		}
 		else {
@@ -22,31 +23,13 @@ const replace_data_url = (folder, content) => {
 		}
 	})
 }
-const process_file = (folder, file) => {
-	let content = fs.readFileSync(folder + file, 'utf8')
-	while (true) {
-		const content1 = content.replace(/_include\(([^)]*)\)/g, (match, file) => {
-			const data_url = get_data_url(folder, file)
-			if (data_url) {
-				return data_url
-			}
-			else {
-				return fs.readFileSync(folder + file, 'utf8')
-			}
-		})
-		if (content === content1) {
-			return content
-		}
-		content = content1
-	}
-}
-const do_it = (files) => {
+const build_files = (files) => {
 	const build_status = {}
 	const recurse = (file) => {
-		if (build_status[file.name] === 'building') {
+		if (build_status[file.name] == 'building') {
 			return
 		}
-		else if (build_status[file.name] === 'built') {
+		else if (build_status[file.name] == 'built') {
 			return
 		}
 		build_status[file.name] = 'building'
@@ -60,9 +43,14 @@ const do_it = (files) => {
 		recurse(files[i])
 	}
 }
-const input_folder = process.argv[2]
-fs.readdir(input_folder, (error, paths) => {
-	const files = []
+const get_paths = (folder) => {
+	return child_process.execSync('dir ' + folder).toString().split(/\s+/).filter(Boolean)
+}
+const input_folders = [process.argv[2], 'src/shared/']
+const files = []
+for (const i in input_folders) {
+	const input_folder = input_folders[i]
+	const paths = get_paths(input_folder)
 	for (const i in paths) {
 		const file = {}
 		file.content = fs.readFileSync(input_folder + paths[i], 'utf8')
@@ -70,7 +58,7 @@ fs.readdir(input_folder, (error, paths) => {
 		if (match) {
 			file.dependencies = []
 			file.check_dependency = (fileb) => {
-				if (file.name !== fileb.name && file.content.includes(fileb.name)) {
+				if (file.name != fileb.name && file.content.includes(fileb.name)) {
 					file.dependencies.push(fileb)
 				}
 			}
@@ -79,10 +67,10 @@ fs.readdir(input_folder, (error, paths) => {
 			files.push(file)
 		}
 	}
-	for (const i in files) {
-		for (const j in files) {
-			files[i].check_dependency(files[j])
-		}
+}
+for (const i in files) {
+	for (const j in files) {
+		files[i].check_dependency(files[j])
 	}
-	do_it(files)
-})
+}
+build_files(files)

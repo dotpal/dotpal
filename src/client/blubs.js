@@ -2,30 +2,20 @@ const Blubs = {}
 {
 	Blubs.create = (network, users) => {
 		const blubs = {}
-		blubs.receive = Signal.create()
-		blubs.create = (options) => {
-			const blub = {}
-			blub.get_title = () => {
-				return options.title
+		blubs.refine = (blub) => {
+			users.refine(blub.user)
+			blub.view = () => {
+				Debug.log('view the fucking blub')
 			}
-			blub.get_description = () => {
-				return options.description
-			}
-			blub.get_time = () => {
-				return options.time
-			}
-			blub.get_children = () => {
-				return options.children
-			}
-			blub.get_user = () => {
-				return options.user
-			}
-			return blub
 		}
+		blubs.receive = Signal.create()
 		blubs.publish = (options) => {
 			network.send(['blub', options])
 		}
-		blubs.receive = network.receive('blub')
+		network.receive('blub').tie(([socket, blub]) => {
+			blubs.refine(blub)
+			blubs.receive.call(blub)
+		})
 		blubs.fetch = (position) => {
 			network.send(['get_blubs', position])
 		}

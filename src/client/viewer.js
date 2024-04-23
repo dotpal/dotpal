@@ -1,12 +1,11 @@
 const Viewer = {}
 {
-	Viewer.create = (blub, user) => {
+	Viewer.create = (blub) => {
 		const viewer = {}
 		viewer.close = Signal.create()
 		viewer.reply = Signal.create()
 		viewer.submit = Signal.create()
 		let editor
-		// more likely to view blubs than create them
 		if (!blub) {
 			editor = true
 		}
@@ -17,9 +16,9 @@ const Viewer = {}
 		document.body.appendChild(container)
 		const form = document.createElement('form')
 		container.appendChild(form)
-		if (user) {
+		if (!editor) {
 			const icon = document.createElement('img')
-			icon.src = user.get_icon()
+			icon.src = blub.user.icon
 			form.appendChild(icon)
 		}
 		const title = document.createElement('textarea')
@@ -39,8 +38,8 @@ const Viewer = {}
 		form.appendChild(description)
 		form.appendChild(document.createElement('br'))
 		if (blub) {
-			title.value = blub.get_title()
-			description.value = blub.get_description()
+			title.value = blub.title
+			description.value = blub.description
 		}
 		viewer.close.tie(() => {
 			container.remove()
@@ -54,7 +53,7 @@ const Viewer = {}
 			viewer.close.call()
 		}
 		container.onclick = (event) => {
-			if (event.target === container) {
+			if (event.target == container) {
 				viewer.close.call()
 			}
 		}
