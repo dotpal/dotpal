@@ -1,72 +1,64 @@
 const Viewer = {}
 {
-	Viewer.create = (blub) => {
-		const viewer = {}
-		viewer.close = Signal.create()
-		viewer.reply = Signal.create()
-		viewer.submit = Signal.create()
-		let editor
-		if (!blub) {
-			editor = true
+	Viewer.create = (blub, blubs, parent) => {
+		const remove = () => {
+			container.remove()
 		}
-		else {
-			editor = false
+		let read = true
+		if (!blub) {
+			read = false
 		}
 		const container = document.createElement('div')
 		document.body.appendChild(container)
 		const form = document.createElement('form')
 		container.appendChild(form)
-		if (!editor) {
+		if (read) {
 			const icon = document.createElement('img')
 			icon.src = blub.user.icon
 			form.appendChild(icon)
+			icon.onclick = () => {
+				blub.user.view()
+			}
 		}
 		const title = document.createElement('textarea')
-		title.cols = 24
+		title.cols = read && 21 || 26
 		title.placeholder = 'title'
-		title.readOnly = !editor
+		title.readOnly = read
 		title.required = true
 		title.rows = 1
 		form.appendChild(title)
 		form.appendChild(document.createElement('br'))
 		const description = document.createElement('textarea')
-		description.cols = 32
+		description.cols = 26
 		description.placeholder = 'description'
-		description.readOnly = !editor
+		description.readOnly = read
 		description.required = true
-		description.rows = 24
+		description.rows = 20
 		form.appendChild(description)
 		form.appendChild(document.createElement('br'))
 		if (blub) {
 			title.value = blub.title
 			description.value = blub.description
 		}
-		viewer.close.tie(() => {
-			container.remove()
-			// viewer.close.remove()
-			viewer.submit.remove()
-		})
 		const close = document.createElement('button')
 		close.textContent = 'close'
 		form.appendChild(close)
 		close.onclick = () => {
-			viewer.close.call()
+			remove()
 		}
 		container.onclick = (event) => {
 			if (event.target == container) {
-				viewer.close.call()
+				remove()
 			}
 		}
-		if (editor) {
+		if (!read) {
 			const publish = document.createElement('button')
 			publish.textContent = 'publish'
 			form.appendChild(publish)
 			form.onsubmit = (event) => {
 				event.preventDefault()
-				const options = {}
-				options.description = description.value
-				options.title = title.value
-				viewer.submit.call(options)
+				blubs.publish(title.value, description.value, parent)
+				remove()
 			}
 		}
 		else {
@@ -81,10 +73,9 @@ const Viewer = {}
 			reply.textContent = 'reply'
 			reply.onclick = (event) => {
 				event.preventDefault()
-				viewer.reply.call()
+				Viewer.create(undefined, blubs, blub.id)
 			}
 			form.appendChild(reply)
 		}
-		return viewer
 	}
 }

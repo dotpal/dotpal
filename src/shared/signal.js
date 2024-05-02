@@ -5,8 +5,8 @@ const Signal = {}
 		let connections = []
 		signal.once = (callback) => {
 			let temporary
-			temporary = signal.tie((values) => {
-				callback(values)
+			temporary = signal.tie((...values) => {
+				callback(...values)
 				temporary.remove()
 			})
 			return temporary
@@ -20,9 +20,9 @@ const Signal = {}
 			connection.call = callback
 			return connection
 		}
-		signal.call = (values) => {
+		signal.call = (...values) => {
 			for (const i in connections) {
-				connections[i].call(values)
+				connections[i].call(...values)
 			}
 		}
 		signal.remove = () => {

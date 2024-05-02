@@ -28,7 +28,7 @@ const Login = {}
 		}
 		form.onsubmit = (event) => {
 			event.preventDefault()
-			login.submit.call([email, password])
+			login.submit.call(email.value, password.value)
 		}
 		return login
 	}

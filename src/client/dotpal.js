@@ -1,26 +1,67 @@
 const Dotpal = {}
 {
 	const network = Network.create('localhost', 8000)
-	const secret = Tryer.create(() => {
-		if (document.cookie != '') {
-			return [true, document.cookie]
-		}
-		else {
+	const store = Store.create(network)
+	let focused
+	const secret = Tryer.create(
+		() => {
+			const secret = store.get('secret')
+			if (secret) {
+				return [true, secret]
+			}
 			return [false]
+		},
+		(secret1) => {
+			store.set('secret', secret1)
+		},
+		(passed) => {
+			if (passed) {
+				store.fetch(secret.get()).once((socket, options) => {
+					const user = users.create(options, secret.get())
+					const yeah_lets_do_it = document.createElement('button')
+					yeah_lets_do_it.textContent = 'yeah_lets_do_it'
+					yeah_lets_do_it.onclick = () => {
+						if (focused) {
+							focused.blub.view()
+						}
+						else {
+							Viewer.create(undefined, blubs)
+						}
+						// camera.focus([focused])
+						// viewer.close.tie(() => {
+						// 	camera.focus(bubbles.bubbles)
+						// })
+					}
+					document.body.appendChild(yeah_lets_do_it)
+					const profile = document.createElement('button')
+					profile.textContent = 'profile'
+					profile.onclick = () => {
+						user.view()
+					}
+					document.body.appendChild(profile)
+				})
+			}
+			else {
+				const login = Login.create(network, camera)
+				login.submit.tie((email, password) => {
+					login.remove()
+					Hash.digest(email + password).then((hash) => {
+						secret.set(hash)
+						const options = {}
+						options.email = email
+						network.send('user', secret.get(), options)
+					})
+				})
+			}
 		}
-	},
-	(secret) => {
-		document.cookie = secret
-	})
-	secret.pass(([secret, options]) => {
-		network.send(['user', secret, options])
-	})
+	)
+	const users = Users.create(network)
 	const camera = Camera.create()
 	const bubbles = Bubbles.create(camera)
 	const geo = Geo.create()
-	const users = Users.create(network, secret)
-	const blubs = Blubs.create(network, users)
+	const blubs = Blubs.create(network, users, secret.get(), geo)
 	const stepper = Stepper.create()
+	secret.get()
 	const loading = {}
 	{
 		let sprite
@@ -39,75 +80,22 @@ const Dotpal = {}
 			}
 		}
 	}
-	users.receive_main.once((user) => {
-		const create = document.createElement('button')
-		create.textContent = 'create'
-		create.onclick = () => {
-			const viewer = Viewer.create()
-			viewer.submit.tie((options) => {
-				viewer.close.call()
-				options.position = geo.position.get()
-				network.send(['blub', secret.get(), options])
-			})
-		}
-		document.body.appendChild(create)
-		const profile = document.createElement('button')
-		profile.textContent = 'profile'
-		profile.onclick = () => {
-			const profile = Profile.create(user)
-		}
-		document.body.appendChild(profile)
-	})
-	secret.fail(() => {
-		const login = Login.create(network, camera)
-		login.submit.tie(([email, password]) => {
-			login.remove()
-			Hash.digest(email.value + password.value).then((hash) => {
-				secret.set(hash)
-				const options = {}
-				options.email = email.value
-				secret.check([options])
-			})
-		})
-	})
-	const forget = () => {
-		const cookies = secret.get().split(';')
-		for (const i in cookies) {
-			const cookie = cookies[i]
-			const equal = cookie.indexOf('=')
-			const name = equal > -1 ? cookie.substr(0, equal) : cookie
-			secret.set(name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT')
-		}
-	}
-	const refresh_feed = (position) => {
+	const refresh = (position) => {
 		blubs.clear()
 		bubbles.clear()
 		loading.enable()
 		blubs.fetch(position)
 	}
-	geo.position.tie(refresh_feed)
+	geo.position.tie(refresh)
 	blubs.receive.tie((blub) => {
 		loading.disable()
 		bubbles.create(blub)
 		camera.focus(bubbles.bubbles)
 	})
 	bubbles.click.tie((bubble) => {
-		camera.focus([bubble])
-		const viewer = Viewer.create(bubble.blub)
-		viewer.close.tie(() => {
-			camera.focus(bubbles.bubbles)
-		})
-		viewer.reply.tie(() => {
-			const comment = Viewer.create()
-			comment.submit.tie((options) => {
-				comment.close.call()
-				options.position = geo.position.get()
-				blubs.publish(options)
-			})
-		})
-		// const children = bubble.get_children()
-		// for (const i in children) {
-		// }
+		bubbles.clear()
+		focused = bubble
+		network.send('get_blub_children', bubble.blub.id)
 	})
 	// idk how i feel about this yet, maybe stepper should be inserted into the singletons
 	// update: i think everything will just be externally controlled from dotpal which probably makes sense because dotpal describes the behavior of dotpal

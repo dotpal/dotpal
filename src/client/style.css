@@ -1,9 +1,9 @@
 * {
 	backface-visibility: hidden;
-	border-radius: 2vh;
+	border-radius: 1vh;
 	border-style: none;
 	border: none;
-	font-size: 2vh;
+	font-size: 2.5vh;
 	image-rendering: pixelated;
 	margin: 0;
 	text-rendering: optimizeSpeed;
@@ -56,8 +56,8 @@ button {
 	background-color: #e65a99; /* 90% */
 	color: #ffffff;
 	cursor: pointer;
-	margin-right: 2vh;
-	padding: 2vh;
+	margin-right: 1vh;
+	padding: 1.5vh;
 	transition: all 0.18s;
 }
 button:hover {
@@ -69,23 +69,23 @@ form {
 	animation: fun 0.2s;
 	background-color: #ffffff; /* 100% */
 	box-shadow: 0vh 0.5vh #e6e6e6; /* 90% */
-	margin-top: 2vh;
-	padding-bottom: 2vh;
-	padding-left: 2vh;
-	padding-top: 2vh;
+	margin-top: 1vh;
+	padding-bottom: 1vh;
+	padding-left: 1vh;
+	padding-top: 1vh;
 }
 textarea, input {
 	background-color: #f2f2f2; /* 95% */
-	margin-bottom: 2vh;
-	margin-right: 2vh;
-	padding: 2vh;
+	margin-bottom: 1vh;
+	margin-right: 1vh;
+	padding: 1.5vh;
 	resize: none;
 }
 img {
-	border-radius: 2vh;
-	height: 6.2vh;
-	margin-bottom: 1.4vh;
-	margin-right: 2vh;
+	border-radius: 1vh;
+	height: 6vh;
+	margin-bottom: 0.2vh;
+	margin-right: 1vh;
 	object-fit: cover;
-	width: 6.2vh;
+	width: 6vh;
 }

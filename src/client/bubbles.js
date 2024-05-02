@@ -7,10 +7,7 @@ const Bubbles = {}
 		const ox = bpx - apx
 		const oy = bpy - apy
 		const o = sqrt(ox*ox + oy*oy)
-		if (o > 0) {
-			return [apx + (o - (ar + br))*ox/o, apy + (o - (ar + br))*oy/o]
-		}
-		return [0, 0]
+		return [apx + (o - (ar + br))*ox/o, apy + (o - (ar + br))*oy/o]
 	}
 	Bubbles.create = (camera) => {
 		const bubbles = {}
@@ -32,7 +29,10 @@ const Bubbles = {}
 				}
 			}
 			const [bpx, bpy, br] = all[min_index].get_geometry()
-			return get_bubble_to_bubble_target(apx, apy, ra, bpx, bpy, br)
+			if (all.length > 1) {
+				return get_bubble_to_bubble_target(apx, apy, ra, bpx, bpy, br)
+			}
+			return [0, 0]
 		}
 		bubbles.create = (blub) => {
 			const bubble = {}
@@ -59,7 +59,8 @@ const Bubbles = {}
 				sprite.style.fontSize = 100*0.3*r/cpz + 'vh'
 				sprite.style.backgroundImage = 'url(_include(bubble.png))' // this is probably using a lot of memory
 			}
-			bubble.set_target = ([tx1, ty1]) => {
+			bubble.set_target = (t) => {
+				const [tx1, ty1] = t
 				px.set_target(tx1)
 				py.set_target(ty1)
 			}

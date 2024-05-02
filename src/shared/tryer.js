@@ -1,36 +1,19 @@
 const Tryer = {}
 {
-	Tryer.create = (passer, setter) => {
+	Tryer.create = (get, set, fix) => {
 		const tryer = {}
-		const signals = {}
-		signals[false] = Signal.create()
-		signals[true] = Signal.create()
-		tryer.pass = (callback) => {
-			const [passed, ...values] = passer()
-			const connection = signals[true].tie(callback)
-			if (passed == true) {
-				signals[true].call(values)
-			}
-			return connection
-		}
-		tryer.fail = (callback) => {
-			const [passed, ...values] = passer()
-			const connection = signals[false].tie(callback)
-			if (passed == false) {
-				signals[false].call(values)
-			}
-			return connection
-		}
-		tryer.check = (extra) => {
-			const [passed, ...values] = passer()
-			signals[passed].call(values.concat(extra))
-		}
+		let passed1
 		tryer.get = () => {
-			return passer()[1]
+			const [passed, value] = get()
+			if (passed) {
+				tryer.get = () => {
+					return value
+				}
+			}
+			fix(passed)
+			return value
 		}
-		tryer.set = (value) => {
-			return setter(value)
-		}
+		tryer.set = set
 		return tryer
 	}
 }

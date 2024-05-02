@@ -1,10 +1,8 @@
 const Dotpal = {}
 {
 	const network = Network.create('localhost', 8000)
-	const database = Saver.create('database.json')
+	const store = Store.create('store.json', network)
 	{
-		const fs = require('fs')
-		const path = require('path')
 		const random = Math.random
 		const get_square_distance = (a, b) => {
 			const [ax, ay] = a
@@ -13,58 +11,63 @@ const Dotpal = {}
 			const dy = by - ay
 			return dx*dx + dy*dy
 		}
-		const database_state = database.get_state()
-		network.receive('blub').tie(([socket, secret, options]) => {
-			for (const id in database_state) {
-				if (database_state[id].secret == secret) {
-					const entry = database.create('blub')
-					entry.children = []
-					entry.description = options.description
-					entry.position = options.position
-					entry.title = options.title
-					entry.user = id
-					network.send(['blub', database.source(entry, ['user'])])
+		network.receive('blub').tie((socket, secret, options, parent) => {
+			if (store.get(secret)) {
+				const asset = store.create('blub')
+				asset.children = []
+				asset.description = options.description
+				asset.position = options.position
+				asset.title = options.title
+				asset.user = secret
+				if (parent) {
+					asset.parent = parent
+					store.get(parent).children.push(asset.id)
+				}
+				network.send('blub', store.source(asset, ['user']))
+			}
+		})
+		network.receive('get_blubs_by_position').tie((socket, position) => {
+			for (const id in store.assets) {
+				const asset = store.get(id)
+				if (asset.type == 'blub' && asset.parent == undefined && get_square_distance(position, asset.position) < 0.001) {
+					network.share(socket, 'blub', store.source(asset, ['user']))
 				}
 			}
 		})
-		network.receive('get_blubs').tie(([socket, position]) => {
-			for (const id in database_state) {
-				const entry = database_state[id]
-				if (entry.type == 'blub' && get_square_distance(position, entry.position) < 0.001) {
-					network.share(socket, ['blub', database.source(entry, ['user'])])
-				}
+		network.receive('get_blub_children').tie((socket, parent) => {
+			const children = store.get(parent).children
+			for (const i in children) {
+				const child = children[i]
+				const asset = store.get(child)
+				network.share(socket, 'blub', store.source(asset, ['user']))
 			}
 		})
 	}
 	{
-		const database_state = database.get_state()
-		network.receive('user').tie(([socket, secret, options]) => {
-			for (const id in database_state) {
-				const entry = database_state[id]
-				if (entry.secret == secret) {
-					if (options) {
-						entry.bio = options.bio
-						entry.icon = options.icon
-						entry.name = options.name
-					}
-					network.share(socket, ['user', entry])
-					return
-				}
+		network.receive('user').tie((socket, secret, options) => {
+			options = options || {}
+			if (store.get(secret)) {
+				const asset = store.get(secret)
+				asset.bio = options.bio
+				asset.email = options.email
+				asset.icon = options.icon
+				asset.name = options.name
+				network.share(socket, 'user', asset)
+				return
 			}
-			const entry = database.create('user')
-			entry.bio = 'Hello world!'
-			entry.icon = 'https://qph.cf2.quoracdn.net/main-qimg-407c4b6f60302d6e9c55695adef129e0-pjlq'
-			entry.name = options.name
-			entry.secret = secret
-			network.share(socket, ['user', entry])
+			const asset = store.create('user', secret)
+			asset.bio = 'Hello world!'
+			asset.email = options.email
+			asset.icon = 'https://qph.cf2.quoracdn.net/main-qimg-407c4b6f60302d6e9c55695adef129e0-pjlq'
+			asset.name = 'Noobie'
+			network.share(socket, 'user', asset)
 		})
 	}
 	// idk if this should be done externally or not but whatever
 	process.on('SIGTERM', () => {
-		database.save()
+		store.save()
 		network.close()
 	})
-	network.listen()
 }
 // const dotpal = Dotpal.create()
 // dotpal.run()

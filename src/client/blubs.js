@@ -1,23 +1,34 @@
 const Blubs = {}
 {
-	Blubs.create = (network, users) => {
+	Blubs.create = (network, users, secret, geo) => {
 		const blubs = {}
-		blubs.refine = (blub) => {
-			users.refine(blub.user)
+		const create = (options) => {
+			const blub = {}
+			blub.description = options.description
+			blub.id = options.id
+			blub.time = options.time
+			blub.title = options.title
+			blub.user = users.create(options.user)
 			blub.view = () => {
-				Debug.log('view the fucking blub')
+				Viewer.create(blub, blubs)
 			}
+			return blub
 		}
-		blubs.receive = Signal.create()
-		blubs.publish = (options) => {
-			network.send(['blub', options])
+		blubs.publish = (title, description, parent) => {
+			const options = {}
+			options.description = description
+			options.position = geo.position.get()
+			options.title = title
+			network.send('blub', secret, options, parent)
 		}
-		network.receive('blub').tie(([socket, blub]) => {
-			blubs.refine(blub)
-			blubs.receive.call(blub)
+		const receive = Signal.create()
+		blubs.receive = receive
+		network.receive('blub').tie((socket, options) => {
+			const blub = create(options)
+			receive.call(blub)
 		})
 		blubs.fetch = (position) => {
-			network.send(['get_blubs', position])
+			network.send('get_blubs_by_position', position)
 		}
 		blubs.clear = () => {
 			Debug.log('clear blubs')

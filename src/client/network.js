@@ -4,30 +4,30 @@ const Network = {}
 	const parse = JSON.parse
 	Network.create = (host, port) => {
 		const network = {}
-		const listeners = Listeners.create()
+		const hooker = Hooker.create()
 		network.close = Signal.create()
 		network.connect = Signal.create()
 		network.error = Signal.create()
-		network.receive = listeners.set
-		const socket = new WebSocket('ws://' + host + ':' + port)
+		network.receive = hooker.get
+		const socket = new WebSocket('ws://' + host + ':' + (port + 1))
 		socket.onclose = network.close.call
 		socket.onerror = network.error.call
 		socket.onopen = network.connect.call
 		socket.onmessage = (event) => {
-			const [key, ...values] = parse(event.data)
-			values.unshift(socket)
-			listeners.call(key, values)
+			const values = parse(event.data)
+			values.splice(1, 0, socket)
+			hooker.call(...values)
 		}
 		const queue = []
-		network.send = (values) => {
+		network.send = (...values) => {
 			queue.unshift(values)
 		}
 		network.connect.tie(() => {
-			network.send = (values) => {
+			network.send = (...values) => {
 				socket.send(stringify(values))
 			}
 			for (let i = queue.length; i--;) {
-				network.send(queue[i])
+				network.send(...queue[i])
 			}
 		})
 		return network

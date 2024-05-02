@@ -5,7 +5,7 @@ const Netizens = {}
 		// const netizens = document.createElement('value')
 		// netizens.value = 'settings'
 		// document.body.appendChild(netizens)
-		// network.receive('netizens').tie(([socket, netizens]) => {
+		// network.receive('netizens').tie((socket, netizens) => {
 		// })
 		return netizens
 	}
