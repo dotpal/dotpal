@@ -1,6 +1,6 @@
 const Blubs = {}
 {
-	Blubs.create = (network, users, secret, geo) => {
+	Blubs.create = (env) => {
 		const blubs = {}
 		const create = (options) => {
 			const blub = {}
@@ -8,27 +8,32 @@ const Blubs = {}
 			blub.id = options.id
 			blub.time = options.time
 			blub.title = options.title
-			blub.user = users.create(options.user)
+			blub.user = env.users.create(options.user)
 			blub.view = () => {
 				Viewer.create(blub, blubs)
+			}
+			blub.refresh_children = () => {
+				env.bubbles.clear()
+				env.network.send('get_blub_children', blub.id)
 			}
 			return blub
 		}
 		blubs.publish = (title, description, parent) => {
 			const options = {}
 			options.description = description
-			options.position = geo.position.get()
+			options.position = env.geo.position.get()
 			options.title = title
-			network.send('blub', secret, options, parent)
+			env.network.send('blub', env.secret, options, parent)
 		}
 		const receive = Signal.create()
 		blubs.receive = receive
-		network.receive('blub').tie((socket, options) => {
+		env.network.receive('blub').tie((socket, options) => {
 			const blub = create(options)
 			receive.call(blub)
 		})
 		blubs.fetch = (position) => {
-			network.send('get_blubs_by_position', position)
+			env.bubbles.clear()
+			env.network.send('get_blubs_by_position', position)
 		}
 		blubs.clear = () => {
 			Debug.log('clear blubs')

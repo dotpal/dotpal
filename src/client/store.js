@@ -3,7 +3,7 @@ const Store = {}
 	const parse = JSON.parse
 	const random = Math.random
 	const stringify = JSON.stringify
-	Store.create = (network) => {
+	Store.create = (env) => {
 		const store = {}
 		const hooker = Hooker.create()
 		const receive = hooker.get
@@ -14,7 +14,7 @@ const Store = {}
 				receive.call(id, parse(asset))
 			}
 			else {
-				network.send('get_asset', id)
+				env.network.send('get_asset', id)
 			}
 		}
 		store.get = (id) => {
@@ -27,14 +27,14 @@ const Store = {}
 			localStorage[id] = stringify(value)
 		}
 		store.fetch = (id) => {
-			network.send('get_asset', id)
-			return network.receive(id)
+			env.network.send('get_asset', id)
+			return env.network.receive(id)
 		}
 		set.tie((id, asset) => {
 			localStorage[id] = stringify(asset)
 			receive.call(id, asset)
 		})
-		// network.receive('asset').tie((socket, id, asset) => {
+		// env.network.receive('asset').tie((socket, id, asset) => {
 		// 	set.set(id, asset)
 		// })
 		return store

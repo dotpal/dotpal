@@ -1,8 +1,6 @@
 * {
-	backface-visibility: hidden;
 	border-radius: 1vh;
 	border-style: none;
-	border: none;
 	font-size: 2.5vh;
 	image-rendering: pixelated;
 	margin: 0;
@@ -33,7 +31,6 @@ div {
 	align-items: center;
 	background-color: rgba(0, 0, 0, 0.2);
 	display: flex;
-	flex-direction: column;
 	height: 100%;
 	justify-content: safe center;
 	left: 0;

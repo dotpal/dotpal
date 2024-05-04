@@ -1,8 +1,64 @@
 const Dotpal = {}
 {
+	const env = {}
 	const network = Network.create('localhost', 8000)
-	const store = Store.create(network)
-	let focused
+	const store = Store.create(env)
+	const users = Users.create(env)
+	const camera = Camera.create()
+	env.camera = camera
+	const bubbles = Bubbles.create(env)
+	const geo = Geo.create()
+	env.network = network
+	env.users = users
+	env.geo = geo
+	env.bubbles = bubbles
+	const blubs = Blubs.create(env)
+	const stepper = Stepper.create()
+	const chain = {}
+	let focused = {}
+	const focus = (blub) => {
+		focused = blub
+		bubbles.clear()
+		loading.enable()
+		blub.refresh_children()
+	}
+	{
+		const links = []
+		const container = document.createElement('div')
+		container.style.backgroundColor = 'rgba(0, 0, 0, 0)'
+		container.style.height = 'auto'
+		container.style.left = '50%'
+		container.style.transform = 'translateX(-50%)'
+		container.style.width = 'auto'
+		document.body.appendChild(container)
+		chain.push = (blub) => {
+			const link = () => {
+				button.remove()
+			}
+			const button = document.createElement('button')
+			button.textContent = blub.title
+			container.appendChild(button)
+			button.onclick = () => {
+				for (let i = links.length; i--;) {
+					if (links[i] != link) {
+						links[i]()
+					}
+					else {
+						break
+					}
+				}
+				focus(blub)
+			}
+			links.push(link)
+			return link
+		}
+		chain.push({
+			title: '[local]',
+			refresh_children: () => {
+				blubs.fetch(geo.position.get())
+			}
+		})
+	}
 	const secret = Tryer.create(
 		() => {
 			const secret = store.get('secret')
@@ -18,21 +74,12 @@ const Dotpal = {}
 			if (passed) {
 				store.fetch(secret.get()).once((socket, options) => {
 					const user = users.create(options, secret.get())
-					const yeah_lets_do_it = document.createElement('button')
-					yeah_lets_do_it.textContent = 'yeah_lets_do_it'
-					yeah_lets_do_it.onclick = () => {
-						if (focused) {
-							focused.blub.view()
-						}
-						else {
-							Viewer.create(undefined, blubs)
-						}
-						// camera.focus([focused])
-						// viewer.close.tie(() => {
-						// 	camera.focus(bubbles.bubbles)
-						// })
+					const create = document.createElement('button')
+					create.textContent = 'create'
+					create.onclick = () => {
+						Viewer.create(undefined, blubs, focused.id)
 					}
-					document.body.appendChild(yeah_lets_do_it)
+					document.body.appendChild(create)
 					const profile = document.createElement('button')
 					profile.textContent = 'profile'
 					profile.onclick = () => {
@@ -55,12 +102,7 @@ const Dotpal = {}
 			}
 		}
 	)
-	const users = Users.create(network)
-	const camera = Camera.create()
-	const bubbles = Bubbles.create(camera)
-	const geo = Geo.create()
-	const blubs = Blubs.create(network, users, secret.get(), geo)
-	const stepper = Stepper.create()
+	env.secret = secret.get()
 	secret.get()
 	const loading = {}
 	{
@@ -81,9 +123,6 @@ const Dotpal = {}
 		}
 	}
 	const refresh = (position) => {
-		blubs.clear()
-		bubbles.clear()
-		loading.enable()
 		blubs.fetch(position)
 	}
 	geo.position.tie(refresh)
@@ -93,9 +132,8 @@ const Dotpal = {}
 		camera.focus(bubbles.bubbles)
 	})
 	bubbles.click.tie((bubble) => {
-		bubbles.clear()
-		focused = bubble
-		network.send('get_blub_children', bubble.blub.id)
+		focus(bubble.blub)
+		chain.push(bubble.blub)
 	})
 	// idk how i feel about this yet, maybe stepper should be inserted into the singletons
 	// update: i think everything will just be externally controlled from dotpal which probably makes sense because dotpal describes the behavior of dotpal

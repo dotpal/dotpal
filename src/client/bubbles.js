@@ -9,7 +9,7 @@ const Bubbles = {}
 		const o = sqrt(ox*ox + oy*oy)
 		return [apx + (o - (ar + br))*ox/o, apy + (o - (ar + br))*oy/o]
 	}
-	Bubbles.create = (camera) => {
+	Bubbles.create = (env) => {
 		const bubbles = {}
 		const all = []
 		bubbles.bubbles = all
@@ -50,7 +50,7 @@ const Bubbles = {}
 			sprite.textContent = blub.title.split('\n')[0].substr(0, 12)
 			link.appendChild(sprite)
 			const present = () => {
-				const [cpx, cpy, cpz] = camera.get_geometry()
+				const [cpx, cpy, cpz] = env.camera.get_geometry()
 				sprite.style.left = 100*(0.5*innerWidth/innerHeight + (px.get_position() - r - cpx)/cpz) + 'vh' // fucking stupid percentages
 				sprite.style.top = 100*(0.5 + (py.get_position() - r - cpy)/cpz) + 'vh'
 				sprite.style.width = 100*2*r/cpz + 'vh'
@@ -93,7 +93,7 @@ const Bubbles = {}
 			}
 		}
 		bubbles.clear = () => {
-			for (const i in all) {
+			for (let i = all.length; i--;) {
 				all[i].remove()
 			}
 		}
