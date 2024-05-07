@@ -1,6 +1,6 @@
 const Signal = {}
 {
-	Signal.create = () => {
+	Signal.create = (pass) => {
 		const signal = {}
 		let connections = []
 		signal.once = (callback) => {
@@ -18,11 +18,24 @@ const Signal = {}
 				connections.splice(connections.indexOf(connection), 1)
 			}
 			connection.call = callback
+			if (connections.length == 1) {
+				Debug.log('this is the second connection...')
+			}
 			return connection
 		}
-		signal.call = (...values) => {
-			for (const i in connections) {
-				connections[i].call(...values)
+		if (!pass) {
+			signal.call = (...values) => {
+				for (const i in connections) {
+					connections[i].call(...values)
+				}
+			}
+		}
+		else {
+			signal.call = (...values) => {
+				values = [pass(...values)]
+				for (const i in connections) {
+					connections[i].call(...values)
+				}
 			}
 		}
 		signal.remove = () => {

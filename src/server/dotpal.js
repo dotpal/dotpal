@@ -1,9 +1,14 @@
 const Dotpal = {}
 {
+	const env = {}
+	const random = Random.create()
+	Debug.load(env)
+	env.get_time = Time.get_time
+	env.random = random.get
+	Store.load(env)
 	const network = Network.create('localhost', 8000)
 	const store = Store.create('store.json', network)
 	{
-		const random = Math.random
 		const get_square_distance = (a, b) => {
 			const [ax, ay] = a
 			const [bx, by] = b

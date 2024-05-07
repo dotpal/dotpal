@@ -1,20 +1,29 @@
 const Dotpal = {}
 {
 	const env = {}
+	const random = Random.create()
+	Blubs.load(env)
+	Bubbles.load(env)
+	Debug.load(env)
+	env.get_time = Time.get_time
+	env.random = random.get
+	Spring.load(env)
+	Stepper.load(env)
+	Store.load(env)
+	Users.load(env)
 	const network = Network.create('localhost', 8000)
-	const store = Store.create(env)
-	const users = Users.create(env)
 	const camera = Camera.create()
-	env.camera = camera
-	const bubbles = Bubbles.create(env)
+	const stepper = Stepper.create()
 	const geo = Geo.create()
+	const store = Store.create()
+	const users = Users.create()
+	const bubbles = Bubbles.create()
+	env.bubbles = bubbles
+	env.camera = camera
+	env.geo = geo
 	env.network = network
 	env.users = users
-	env.geo = geo
-	env.bubbles = bubbles
-	const blubs = Blubs.create(env)
-	const stepper = Stepper.create()
-	const chain = {}
+	const blubs = Blubs.create()
 	let focused = {}
 	const focus = (blub) => {
 		focused = blub
@@ -22,6 +31,7 @@ const Dotpal = {}
 		loading.enable()
 		blub.refresh_children()
 	}
+	const chain = {}
 	{
 		const links = []
 		const container = document.createElement('div')
@@ -102,7 +112,7 @@ const Dotpal = {}
 			}
 		}
 	)
-	env.secret = secret.get()
+	env.secret = secret
 	secret.get()
 	const loading = {}
 	{
@@ -126,7 +136,7 @@ const Dotpal = {}
 		blubs.fetch(position)
 	}
 	geo.position.tie(refresh)
-	blubs.receive.tie((blub) => {
+	blubs.create.tie((blub) => {
 		loading.disable()
 		bubbles.create(blub)
 		camera.focus(bubbles.bubbles)
