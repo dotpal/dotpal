@@ -7,7 +7,7 @@ const Store = {}
 		Store.create = (path, network) => {
 			const store = {}
 			if (!fs.existsSync(path)) {
-				Debug.log('save file', path, 'doesnt exist creating it')
+				env.print('save file', path, 'doesnt exist creating it')
 				fs.writeFileSync(path, '{}')
 			}
 			const assets = parse(fs.readFileSync(path))

@@ -8,6 +8,7 @@
 }
 bubble {
 	animation: fun 1s;
+	background-image: url('_include(bubble.png)');
 	background-repeat: no-repeat; /* maybe this is faster */
 	background-size: 100%;
 	cursor: pointer;
@@ -50,12 +51,13 @@ loading {
 	z-index: 1;
 }
 button {
+	animation: fun 0.15s;
 	background-color: #e65a99; /* 90% */
 	color: #ffffff;
 	cursor: pointer;
 	margin-right: 1vh;
 	padding: 1.5vh;
-	transition: all 0.18s;
+	transition: all 0.15s;
 }
 button:hover {
 	background-color: #ff63a9; /* 100% */
@@ -63,7 +65,7 @@ button:hover {
 	transform: translateY(-0.5vh);
 }
 form {
-	animation: fun 0.2s;
+	animation: fun 0.15s;
 	background-color: #ffffff; /* 100% */
 	box-shadow: 0vh 0.5vh #e6e6e6; /* 90% */
 	margin-top: 1vh;

@@ -1,33 +1,36 @@
-x set name for user
-x set icons for user
-- attach images to blubs
-- attach links to blubs (they should be clickable after blubbing)
-- create blubs on blubs like threads on twitter
-x blubs get smaller over time as they approach their expiration date
-- blub should grow as people comment, interact, follow, etc. the blub
-x blubs should have descriptions
-- blub expiration date
-- bubble should disappear from expiration date
-- blubs should have timestamps
-- blubs should have user who blubed
-x encode the coordinates, the timestamps, etc. for blubs
-x default the location to hiroshima university of location services are off
-x you should only be able to blub at your location
-- follow people
-- notification inbox
-- dont make it rely on fs (save index.html into memory on the server)
-x make the build process more automatic so we dont need to define includes
-- users should have locations on their profile
-- make people appear on the map live
-- bubble visits over time
-x account creation dates
-- get which bubbles are clicked by each user
+x Set name for user
+x Set icons for user
+- Attach images to blubs
+- Attach links to blubs (they should be clickable after blubbing)
+- Create blubs on blubs like threads on twitter
+x Blubs get smaller over time as they approach their expiration date
+- Blub should grow as people comment, interact, follow, etc. the blub
+x Blubs should have descriptions
+- Blub expiration date
+- Bubble should disappear from expiration date
+- Blubs should have timestamps
+- Blubs should have user who blubed
+x Encode the coordinates, the timestamps, etc. for blubs
+x Default the location to hiroshima university of location services are off
+x You should only be able to blub at your location
+- Follow people
+- Notification inbox
+- Dont make it rely on fs (save index.html into memory on the server)
+x Make the build process more automatic so we dont need to define includes
+- Users should have locations on their profile
+- Make people appear on the map live
+- Bubble visits over time
+x Account creation dates
+- Get which bubbles are clicked by each user
+^ Clicking on the bubble should display the title, then clicking again should view the bubble
+^ The size of bubbles should be proportional to views/time
+- bubble health += 5 - time looked at bubble
 
-[todo soon now]
-x send in chat a preview of the current version for taishi
+[Todo soon now]
+x Send in chat a preview of the current version for taishi
 
-[design]
-- don't dig into objects because they know how to do it more efficiently than you do
-	- given this, things should be well-exposed, and the exposed functions define the toolset.
-	- fetch-based, not push-based
-- things that are dependent on each other in some way shouldn't describe that dependent behavior in different files, for example, settings and blub create button are being created in different files, but thats wrong, because the design of those two things depend on one another. so they should be created from a centralized location. Which also makes sense because it describes "dotpal" or "dotpal interface," not user & blub.
+[Design]
+- Don't dig into objects because they know how to do it more efficiently than you do
+	- Given this, things should be well-exposed, and the exposed functions define the toolset
+	- Fetch-based, not push-based
+- Things that are dependent on each other in some way shouldn't describe that dependent behavior in different files, for example, settings and blub create button are being created in different files, but thats wrong, because the design of those two things depend on one another. so they should be created from a centralized location. Which also makes sense because it describes "dotpal" or "dotpal interface," not user & blub

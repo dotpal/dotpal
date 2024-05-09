@@ -2,7 +2,6 @@ const Bubbles = {}
 {
 	const sqrt = Math.sqrt
 	const exp = Math.exp
-	const or = Logic.or
 	const get_bubble_to_bubble_target = (apx, apy, ar, bpx, bpy, br) => {
 		const ox = bpx - apx
 		const oy = bpy - apy
@@ -10,6 +9,8 @@ const Bubbles = {}
 		return [apx + (o - (ar + br))*ox/o, apy + (o - (ar + br))*oy/o]
 	}
 	Bubbles.load = (env) => {
+		const Signal = env.require('Signal')
+		const Spring = env.require('Spring')
 		Bubbles.create = () => {
 			const bubbles = {}
 			const all = []
@@ -42,12 +43,12 @@ const Bubbles = {}
 				let py = Spring.create()
 				let r = 1
 				all.push(bubble)
-				const link = document.createElement('a')
-				document.body.appendChild(link)
+				const link = env.createElement('a')
+				env.body.appendChild(link)
 				link.onclick = () => {
 					bubbles.click.call(bubble)
 				}
-				const sprite = document.createElement('bubble')
+				const sprite = env.createElement('bubble')
 				sprite.textContent = blub.title.split('\n')[0].substr(0, 12)
 				link.appendChild(sprite)
 				const present = () => {
@@ -58,7 +59,7 @@ const Bubbles = {}
 					sprite.style.height = 100*2*r/cpz + 'vh'
 					sprite.style.lineHeight = 100*2*r/cpz + 'vh'
 					sprite.style.fontSize = 100*0.3*r/cpz + 'vh'
-					sprite.style.backgroundImage = 'url(_include(bubble.png))' // this is probably using a lot of memory
+					// sprite.style.backgroundImage = 'url(_include(bubble.png))' // this is probably using a lot of memory
 				}
 				bubble.set_target = (t) => {
 					const [tx1, ty1] = t
@@ -90,7 +91,7 @@ const Bubbles = {}
 					bubble.step(dt)
 					const [px, py, r] = bubble.get_geometry()
 					const elapsed = env.get_time() - bubble.blub.time
-					bubble.set_radius(exp(-0.00001*elapsed))
+					// bubble.set_radius(exp(-0.00001*elapsed))
 				}
 			}
 			bubbles.clear = () => {

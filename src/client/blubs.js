@@ -1,6 +1,7 @@
 const Blubs = {}
 {
 	Blubs.load = (env) => {
+		const Signal = env.require('Signal')
 		Blubs.create = () => {
 			const blubs = {}
 			const create = Signal.create((options) => {
@@ -35,7 +36,7 @@ const Blubs = {}
 				env.network.send('get_blubs_by_position', position)
 			}
 			blubs.clear = () => {
-				Debug.log('clear blubs')
+				env.print('clear blubs')
 			}
 			return blubs
 		}

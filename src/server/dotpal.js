@@ -1,11 +1,30 @@
 const Dotpal = {}
 {
 	const env = {}
+	{
+		const loaded = {}
+		env.require = (name) => {
+			const _name = '_' + name
+			if (!loaded[_name]) {
+				eval('loaded.' + _name + ' = ' + _name)
+				loaded[_name].load(env)
+			}
+			return loaded[_name]
+		}
+	}
+	const Clock = env.require('Clock')
+	const Debug = env.require('Debug')
+	const Hooker = env.require('Hooker')
+	const Network = env.require('Network')
+	const Random = env.require('Random')
+	const Signal = env.require('Signal')
+	const Store = env.require('Store')
+	const debug = Debug.create()
+	env.print = debug.print
+	env.error = debug.error
 	const random = Random.create()
-	Debug.load(env)
-	env.get_time = Time.get_time
+	env.get_time = Clock.get_time
 	env.random = random.get
-	Store.load(env)
 	const network = Network.create('localhost', 8000)
 	const store = Store.create('store.json', network)
 	{

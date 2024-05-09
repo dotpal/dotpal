@@ -3,73 +3,54 @@ const get_data_url = (folder, file) => {
 	const content = fs.readFileSync(folder + file, 'base64')
 	const extension = file.split('.')[1]
 	const type = {
+		gif: 'image/gif',
 		jpg: 'image/jpeg',
 		png: 'image/png',
-		gif: 'image/gif',
 	}[extension]
+	if (extension == 'css') {
+		return `${atob(content)}`
+	}
 	if (type) {
 		return `data:${type};base64,${content}`
 	}
+	console.error(folder + file + ' type is missing missing')
+}
+const array_swap = (array, ia, ib) => {
+	const temp = array[ia]
+	array[ia] = array[ib]
+	array[ib] = temp
 }
 const replace_data_url = (folder, content) => {
 	return content.replace(/_include\(([^)]*)\)/g, (match, file) => {
-		const data_url = get_data_url(folder, file)
-		if (data_url) {
-			return data_url
-		}
-		else {
-			return fs.readFileSync(folder + file, 'utf8')
-		}
+		return get_data_url(folder, file)
 	})
 }
-const build_files = (files) => {
-	const status = {}
-	const recurse = (file) => {
-		if (status[file.name] == 'building') {
-			return
-		}
-		else if (status[file.name] == 'built') {
-			return
-		}
-		status[file.name] = 'building'
-		for (const i in file.dependencies) {
-			recurse(file.dependencies[i])
-		}
-		status[file.name] = 'built'
-		console.log(file.content)
-	}
-	for (const i in files) {
-		recurse(files[i])
-	}
+const replace = (input, search, replacement) => {
+	return input.split(search).join(replacement)
 }
 const get_paths = (folder) => {
 	return Bun.spawnSync(['dir', folder]).stdout.toString().split(/\s+/).filter(Boolean)
 }
 const folders = [process.argv[2], 'src/shared/']
-const files = []
+const files = {}
 for (const i in folders) {
 	const folder = folders[i]
 	const paths = get_paths(folder)
 	for (const i in paths) {
 		const file = {}
-		file.content = fs.readFileSync(folder + paths[i], 'utf8')
-		const match = file.content.match(/const\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/)
+		const content = fs.readFileSync(folder + paths[i], 'utf8')
+		const match = content.match(/const\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/)
 		if (match) {
-			file.dependencies = []
-			file.check = (fileb) => {
-				if (file.name != fileb.name && file.content.includes(fileb.name)) {
-					file.dependencies.push(fileb)
-				}
-			}
-			file.name = match[1]
-			file.content = replace_data_url(folder, file.content)
-			files.push(file)
+			const name = match[1]
+			files[name] = replace(content, name, '_' + name)
+			files[name] = replace_data_url(folder, files[name])
+			files[name] = replace_data_url(folder, files[name]) // level 2 recursion
 		}
 	}
 }
-for (const i in files) {
-	for (const j in files) {
-		files[i].check(files[j])
+for (const name in files) {
+	if (name != 'Dotpal') {
+		console.log(files[name])
 	}
 }
-build_files(files)
+console.log(files['Dotpal'])

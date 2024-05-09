@@ -13,46 +13,46 @@ const Users = {}
 					read = false
 				}
 				user.view = () => {
-					const container = document.createElement('div')
-					document.body.appendChild(container)
-					const form = document.createElement('form')
+					const container = env.createElement('div')
+					env.body.appendChild(container)
+					const form = env.createElement('form')
 					container.appendChild(form)
 					{
-						const icon = document.createElement('img')
+						const icon = env.createElement('img')
 						icon.src = user.icon
 						form.appendChild(icon)
 						icon.onclick = () => {
 							user.view()
 						}
 					}
-					const name = document.createElement('textarea')
+					const name = env.createElement('textarea')
 					name.cols = 21
 					name.placeholder = 'name'
 					name.readOnly = read
 					name.rows = 1
 					name.value = user.name
 					form.appendChild(name)
-					form.appendChild(document.createElement('br'))
+					form.appendChild(env.createElement('br'))
 					let icon
 					if (!read) {
-						icon = document.createElement('textarea')
+						icon = env.createElement('textarea')
 						icon.cols = 26
 						icon.placeholder = 'icon'
 						icon.rows = 1
 						icon.value = user.icon
 						form.appendChild(icon)
-						form.appendChild(document.createElement('br'))
+						form.appendChild(env.createElement('br'))
 					}
-					const bio = document.createElement('textarea')
+					const bio = env.createElement('textarea')
 					bio.cols = 26
 					bio.placeholder = 'bio'
 					bio.readOnly = read
 					bio.rows = 17
 					bio.value = user.bio
 					form.appendChild(bio)
-					form.appendChild(document.createElement('br'))
+					form.appendChild(env.createElement('br'))
 					if (!read) {
-						const save = document.createElement('button')
+						const save = env.createElement('button')
 						save.textContent = 'save'
 						form.appendChild(save)
 						form.onsubmit = (event) => {
@@ -64,7 +64,7 @@ const Users = {}
 							user.publish()
 						}
 					}
-					const close = document.createElement('button')
+					const close = env.createElement('button')
 					close.textContent = 'close'
 					form.appendChild(close)
 					close.onclick = (event) => {

@@ -4,6 +4,8 @@ const Store = {}
 	const random = Math.random
 	const stringify = JSON.stringify
 	Store.load = (env) => {
+		const Hooker = env.require('Hooker')
+		const State = env.require('State')
 		Store.create = () => {
 			const store = {}
 			const hooker = Hooker.create()

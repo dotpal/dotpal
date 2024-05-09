@@ -1,29 +1,60 @@
 const Dotpal = {}
 {
 	const env = {}
+	{
+		const loaded = {}
+		env.require = (name) => {
+			const _name = '_' + name
+			if (!loaded[_name]) {
+				eval('loaded.' + _name + ' = ' + _name)
+				loaded[_name].load(env)
+			}
+			return loaded[_name]
+		}
+	}
+	const Blubs = env.require('Blubs')
+	const Bubbles = env.require('Bubbles')
+	const Camera = env.require('Camera')
+	const Clock = env.require('Clock')
+	const Debug = env.require('Debug')
+	const Geo = env.require('Geo')
+	const Hooker = env.require('Hooker')
+	const Network = env.require('Network')
+	const Random = env.require('Random')
+	const Signal = env.require('Signal')
+	const Spring = env.require('Spring')
+	const Stepper = env.require('Stepper')
+	const Store = env.require('Store')
+	const Tryer = env.require('Tryer')
+	const Users = env.require('Users')
+	const Viewer = env.require('Viewer')
+	env.createElement = (...values) => {
+		return document.createElement(...values)
+	}
+	env.body = document.body
+	env.head = document.head
 	const random = Random.create()
-	Blubs.load(env)
-	Bubbles.load(env)
-	Debug.load(env)
-	env.get_time = Time.get_time
+	env.get_time = Clock.get_time
 	env.random = random.get
-	Spring.load(env)
-	Stepper.load(env)
-	Store.load(env)
-	Users.load(env)
+	const debug = Debug.create()
+	env.print = debug.print
+	env.error = debug.error
 	const network = Network.create('localhost', 8000)
+	env.network = network
 	const camera = Camera.create()
+	env.camera = camera
 	const stepper = Stepper.create()
 	const geo = Geo.create()
-	const store = Store.create()
+	env.geo = geo
 	const users = Users.create()
+	env.users = users
 	const bubbles = Bubbles.create()
 	env.bubbles = bubbles
-	env.camera = camera
-	env.geo = geo
-	env.network = network
-	env.users = users
 	const blubs = Blubs.create()
+	const store = Store.create()
+	const style = env.createElement('style')
+	style.textContent = `_include(style.css)`
+	env.head.appendChild(style)
 	let focused = {}
 	const focus = (blub) => {
 		focused = blub
@@ -34,18 +65,18 @@ const Dotpal = {}
 	const chain = {}
 	{
 		const links = []
-		const container = document.createElement('div')
+		const container = env.createElement('div')
 		container.style.backgroundColor = 'rgba(0, 0, 0, 0)'
 		container.style.height = 'auto'
 		container.style.left = '50%'
 		container.style.transform = 'translateX(-50%)'
 		container.style.width = 'auto'
-		document.body.appendChild(container)
+		env.body.appendChild(container)
 		chain.push = (blub) => {
 			const link = () => {
 				button.remove()
 			}
-			const button = document.createElement('button')
+			const button = env.createElement('button')
 			button.textContent = blub.title
 			container.appendChild(button)
 			button.onclick = () => {
@@ -84,18 +115,18 @@ const Dotpal = {}
 			if (passed) {
 				store.fetch(secret.get()).once((socket, options) => {
 					const user = users.create(options, secret.get())
-					const create = document.createElement('button')
+					const create = env.createElement('button')
 					create.textContent = 'create'
 					create.onclick = () => {
 						Viewer.create(undefined, blubs, focused.id)
 					}
-					document.body.appendChild(create)
-					const profile = document.createElement('button')
+					env.body.appendChild(create)
+					const profile = env.createElement('button')
 					profile.textContent = 'profile'
 					profile.onclick = () => {
 						user.view()
 					}
-					document.body.appendChild(profile)
+					env.body.appendChild(profile)
 				})
 			}
 			else {
@@ -119,10 +150,10 @@ const Dotpal = {}
 		let sprite
 		loading.enable = () => {
 			if (!sprite) {
-				sprite = document.createElement('loading')
+				sprite = env.createElement('loading')
 				sprite.style.backgroundImage = 'url(_include(loading.gif))'
 				sprite.style.backgroundSize = '20vh'
-				document.body.appendChild(sprite)
+				env.body.appendChild(sprite)
 			}
 		}
 		loading.disable = () => {
@@ -154,12 +185,12 @@ const Dotpal = {}
 	geo.position.set([0.970713, 5.45788891708])
 	geo.request()
 	{
-		document.body.style.backgroundColor = '#e6e6e6'
-		document.body.style.backgroundImage = 'url(_include(globe.png))'
-		document.body.style.backgroundSize = '200vh'
-		// document.body.style.backgroundPosition = 'center center'
-		// document.body.style.backgroundPosition = -100*px/pz + 'vh' + ' ' + -100*py/pz + 'vh'
-		// document.body.style.backgroundSize = 10*200/pz + 'vh'
-		// document.body.style.transform = ''
+		env.body.style.backgroundColor = '#e6e6e6'
+		env.body.style.backgroundImage = 'url(_include(globe.png))'
+		env.body.style.backgroundSize = '200vh'
+		// env.body.style.backgroundPosition = 'center center'
+		// env.body.style.backgroundPosition = -100*px/pz + 'vh' + ' ' + -100*py/pz + 'vh'
+		// env.body.style.backgroundSize = 10*200/pz + 'vh'
+		// env.body.style.transform = ''
 	}
 }
