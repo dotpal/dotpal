@@ -1,9 +1,8 @@
 const Network = {}
 {
-	const fs = require('fs')
 	const parse = JSON.parse
 	const stringify = JSON.stringify
-	Network.load = (env) => {
+	Network.link = (env) => {
 		const Hooker = env.require('Hooker')
 		const Signal = env.require('Signal')
 		Network.create = (host, port) => {
@@ -17,8 +16,8 @@ const Network = {}
 			const front = Bun.serve({
 				hostname: host,
 				port: port,
-				fetch(request, front) {
-					return new Response(fs.readFileSync('build/index.html'), {headers: {'content-type': 'text/html'}})
+				fetch(request) {
+					return new Response(`<!doctype html><body><script>"use strict"\n_include(../../build/index.html)</script>`, {headers: {'content-type': 'text/html'}})
 				}
 			})
 			const speed = Bun.serve({

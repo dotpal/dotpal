@@ -8,7 +8,7 @@
 }
 bubble {
 	animation: fun 1s;
-	background-image: url('_include(bubble.png)');
+	background-image: url("_include(bubble.png)");
 	background-repeat: no-repeat; /* maybe this is faster */
 	background-size: 100%;
 	cursor: pointer;

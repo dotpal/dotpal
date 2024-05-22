@@ -1,14 +1,19 @@
 const fs = require('fs')
 const get_data_url = (folder, file) => {
 	const content = fs.readFileSync(folder + file, 'base64')
-	const extension = file.split('.')[1]
+	const extension = file.split('.').pop()
 	const type = {
+		css: 'text/css',
 		gif: 'image/gif',
+		html: 'text/html',
 		jpg: 'image/jpeg',
 		png: 'image/png',
 	}[extension]
-	if (extension == 'css') {
-		return `${atob(content)}`
+	if (extension == 'html') {
+		return atob(content).replace(/\n/g, '\\n')//.replace(/\t/g, '')
+	}
+	else if (extension == 'css') {
+		return atob(content).replace(/[\n\s]+/g, ' ')
 	}
 	if (type) {
 		return `data:${type};base64,${content}`
@@ -49,8 +54,8 @@ for (const i in folders) {
 	}
 }
 for (const name in files) {
-	if (name != 'Dotpal') {
+	if (name != 'Main') {
 		console.log(files[name])
 	}
 }
-console.log(files['Dotpal'])
+console.log(files['Main'])

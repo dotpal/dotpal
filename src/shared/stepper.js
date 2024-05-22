@@ -1,6 +1,6 @@
 const Stepper = {}
 {
-	Stepper.load = (env) => {
+	Stepper.link = (env) => {
 		Stepper.create = () => {
 			const stepper = {}
 			const steppers = []

@@ -1,1 +1,1 @@
-./build.sh && bun build/server.js
+./build.sh && bun build/dotpal.js

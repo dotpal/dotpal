@@ -8,7 +8,7 @@ const Bubbles = {}
 		const o = sqrt(ox*ox + oy*oy)
 		return [apx + (o - (ar + br))*ox/o, apy + (o - (ar + br))*oy/o]
 	}
-	Bubbles.load = (env) => {
+	Bubbles.link = (env) => {
 		const Signal = env.require('Signal')
 		const Spring = env.require('Spring')
 		Bubbles.create = () => {
@@ -43,13 +43,13 @@ const Bubbles = {}
 				let py = Spring.create()
 				let r = 1
 				all.push(bubble)
-				const link = env.createElement('a')
-				env.body.appendChild(link)
+				const link = document.createElement('a')
+				document.body.appendChild(link)
 				link.onclick = () => {
 					bubbles.click.call(bubble)
 				}
-				const sprite = env.createElement('bubble')
-				sprite.textContent = blub.title.split('\n')[0].substr(0, 12)
+				const sprite = document.createElement('bubble')
+				sprite.textContent = blub.title.substr(0, 12)
 				link.appendChild(sprite)
 				const present = () => {
 					const [cpx, cpy, cpz] = env.camera.get_geometry()

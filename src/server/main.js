@@ -1,4 +1,4 @@
-const Dotpal = {}
+const Main = {}
 {
 	const env = {}
 	{
@@ -7,7 +7,7 @@ const Dotpal = {}
 			const _name = '_' + name
 			if (!loaded[_name]) {
 				eval('loaded.' + _name + ' = ' + _name)
-				loaded[_name].load(env)
+				loaded[_name].link(env)
 			}
 			return loaded[_name]
 		}
@@ -93,5 +93,5 @@ const Dotpal = {}
 		network.close()
 	})
 }
-// const dotpal = Dotpal.create()
+// const dotpal = Main.create()
 // dotpal.run()

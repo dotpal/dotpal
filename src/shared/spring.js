@@ -4,7 +4,7 @@ const Spring = {}
 	const sin = Math.sin
 	const exp = Math.exp
 	const sqrt = Math.sqrt
-	Spring.load = (env) => {
+	Spring.link = (env) => {
 		Spring.create = () => {
 			const spring = {}
 			let t = env.get_time()

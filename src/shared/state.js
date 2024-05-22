@@ -1,6 +1,6 @@
 const State = {}
 {
-	State.load = (env) => {
+	State.link = (env) => {
 		const Signal = env.require('Signal')
 		State.create = () => {
 			let values

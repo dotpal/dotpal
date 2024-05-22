@@ -1,6 +1,6 @@
 const Tryer = {}
 {
-	Tryer.load = (env) => {
+	Tryer.link = (env) => {
 		Tryer.create = (get, set, fix) => {
 			const tryer = {}
 			let passed1

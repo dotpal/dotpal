@@ -1,58 +1,60 @@
 const Users = {}
 {
-	Users.load = (env) => {
+	Users.link = (env) => {
 		Users.create = () => {
 			const users = {}
-			const create = (options, secret) => {
+			const create = (options) => {
+				const network = env.network
+				const secret = env.secret
 				const user = {}
 				user.bio = options.bio
 				user.icon = options.icon
 				user.name = options.name
 				let read = true
-				if (secret) {
+				if (secret.get()) {
 					read = false
 				}
 				user.view = () => {
-					const container = env.createElement('div')
-					env.body.appendChild(container)
-					const form = env.createElement('form')
+					const container = document.createElement('div')
+					document.body.appendChild(container)
+					const form = document.createElement('form')
 					container.appendChild(form)
 					{
-						const icon = env.createElement('img')
+						const icon = document.createElement('img')
 						icon.src = user.icon
 						form.appendChild(icon)
 						icon.onclick = () => {
 							user.view()
 						}
 					}
-					const name = env.createElement('textarea')
+					const name = document.createElement('textarea')
 					name.cols = 21
 					name.placeholder = 'name'
 					name.readOnly = read
 					name.rows = 1
 					name.value = user.name
 					form.appendChild(name)
-					form.appendChild(env.createElement('br'))
+					form.appendChild(document.createElement('br'))
 					let icon
 					if (!read) {
-						icon = env.createElement('textarea')
+						icon = document.createElement('textarea')
 						icon.cols = 26
 						icon.placeholder = 'icon'
 						icon.rows = 1
 						icon.value = user.icon
 						form.appendChild(icon)
-						form.appendChild(env.createElement('br'))
+						form.appendChild(document.createElement('br'))
 					}
-					const bio = env.createElement('textarea')
+					const bio = document.createElement('textarea')
 					bio.cols = 26
 					bio.placeholder = 'bio'
 					bio.readOnly = read
 					bio.rows = 17
 					bio.value = user.bio
 					form.appendChild(bio)
-					form.appendChild(env.createElement('br'))
+					form.appendChild(document.createElement('br'))
 					if (!read) {
-						const save = env.createElement('button')
+						const save = document.createElement('button')
 						save.textContent = 'save'
 						form.appendChild(save)
 						form.onsubmit = (event) => {
@@ -64,7 +66,7 @@ const Users = {}
 							user.publish()
 						}
 					}
-					const close = env.createElement('button')
+					const close = document.createElement('button')
 					close.textContent = 'close'
 					form.appendChild(close)
 					close.onclick = (event) => {
@@ -77,12 +79,12 @@ const Users = {}
 					}
 				}
 				user.publish = () => {
-					env.network.send('user', secret, user)
+					network.send('user', secret.get(), user)
 				}
 				return user
 			}
 			// const receive = Signal.create()
-			// env.network.receive('user').tie((socket, user) => {
+			// network.receive('user').tie((socket, user) => {
 			// 	const user = create(options)
 			// 	receive.call(user)
 			// })

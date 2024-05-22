@@ -2,26 +2,26 @@ x Set name for user
 x Set icons for user
 - Attach images to blubs
 - Attach links to blubs (they should be clickable after blubbing)
-- Create blubs on blubs like threads on twitter
+x Create blubs on blubs like threads on twitter
 x Blubs get smaller over time as they approach their expiration date
 - Blub should grow as people comment, interact, follow, etc. the blub
 x Blubs should have descriptions
 - Blub expiration date
 - Bubble should disappear from expiration date
 - Blubs should have timestamps
-- Blubs should have user who blubed
+x Blubs should have user who blubbed
 x Encode the coordinates, the timestamps, etc. for blubs
 x Default the location to hiroshima university of location services are off
 x You should only be able to blub at your location
 - Follow people
 - Notification inbox
-- Dont make it rely on fs (save index.html into memory on the server)
+x Dont make it rely on fs (save index.html into memory on the server)
 x Make the build process more automatic so we dont need to define includes
 - Users should have locations on their profile
 - Make people appear on the map live
-- Bubble visits over time
-x Account creation dates
+- Bubble visits over time (what about track interaction events?)
 - Get which bubbles are clicked by each user
+x Account creation dates
 ^ Clicking on the bubble should display the title, then clicking again should view the bubble
 ^ The size of bubbles should be proportional to views/time
 - bubble health += 5 - time looked at bubble

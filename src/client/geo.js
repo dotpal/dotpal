@@ -7,16 +7,16 @@ const Geo = {}
 	const mod = (x, y) => {
 		return x - floor(x/y)*y
 	}
-	Geo.load = (env) => {
+	Geo.link = (env) => {
 		const State = env.require('State')
 		Geo.create = () => {
 			const geo = {}
 			geo.position = State.create()
-			const pin = env.createElement('img')
+			const pin = document.createElement('img')
 			pin.src = '_include(pin.png)'
 			pin.style.position = 'fixed'
 			pin.style.transform = 'translate(-50%, -100%)'
-			env.body.appendChild(pin)
+			document.body.appendChild(pin)
 			geo.position.tie(([cx, cy]) => {
 				pin.style.left = 100*IP*cy + 'vh'
 				pin.style.top = 100*IP*cx + 'vh'

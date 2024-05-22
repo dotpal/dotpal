@@ -3,7 +3,7 @@ const Store = {}
 	const fs = require('fs')
 	const parse = JSON.parse
 	const stringify = JSON.stringify
-	Store.load = (env) => {
+	Store.link = (env) => {
 		Store.create = (path, network) => {
 			const store = {}
 			if (!fs.existsSync(path)) {

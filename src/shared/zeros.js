@@ -5,7 +5,7 @@ const Zeros = {}
 	const cbrt = Math.cbrt
 	const epsilon = 1e-10
 	// solve results are guaranteed real && sorted.
-	Zeros.load = (env) => {
+	Zeros.link = (env) => {
 		const or = Logic.or
 		const is = Logic.is
 		const solve = (a, b, c, d, e) => {

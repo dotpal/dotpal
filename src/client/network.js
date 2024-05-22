@@ -2,7 +2,7 @@ const Network = {}
 {
 	const stringify = JSON.stringify
 	const parse = JSON.parse
-	Network.load = (env) => {
+	Network.link = (env) => {
 		const Hooker = env.require('Hooker')
 		const Signal = env.require('Signal')
 		Network.create = (host, port) => {

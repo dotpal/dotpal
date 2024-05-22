@@ -1,6 +1,6 @@
 const Signal = {}
 {
-	Signal.load = (env) => {
+	Signal.link = (env) => {
 		Signal.create = (pass) => {
 			const signal = {}
 			let connections = []

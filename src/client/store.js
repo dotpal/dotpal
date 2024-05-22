@@ -3,7 +3,7 @@ const Store = {}
 	const parse = JSON.parse
 	const random = Math.random
 	const stringify = JSON.stringify
-	Store.load = (env) => {
+	Store.link = (env) => {
 		const Hooker = env.require('Hooker')
 		const State = env.require('State')
 		Store.create = () => {

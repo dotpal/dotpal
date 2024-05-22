@@ -5,7 +5,7 @@ const Debug = {}
 	const trace = console.trace
 	const authorical = true
 	const visual = true
-	Debug.load = (env) => {
+	Debug.link = (env) => {
 		Debug.create = () => {
 			const debug = {}
 			onerror = (message, source, line, column, error) => {
@@ -17,11 +17,11 @@ const Debug = {}
 				if (!typeof window) {
 					for (let i = 0; i < values.length; ++i) {
 						const message = values[i]
-						const element = env.createElement('label')
+						const element = document.createElement('label')
 						element.textContent = message
-						env.body.appendChild(element)
+						document.body.appendChild(element)
 					}
-					env.body.appendChild(env.createElement('br'))
+					document.body.appendChild(document.createElement('br'))
 				}
 			}
 			const print = (...values) => {
@@ -39,21 +39,21 @@ const Debug = {}
 			/*
 			debug.point = (px, py) => {
 				const [cpx, cpy, cpz] = Camera.get_geometry()
-				const element = env.createElement('debug')
+				const element = document.createElement('debug')
 				element.style.left = 100*(0.5*innerWidth/innerHeight + (px - cpx)/cpz) + 'vh'
 				element.style.top = 100*(0.5 + (py - cpy)/cpz) + 'vh'
 				element.style.width = '0.5vh'
 				element.style.height = '0.5vh'
-				env.body.appendChild(element)
+				document.body.appendChild(element)
 			}
 			*/
 			debug.point = (px, py) => {
-				const element = env.createElement('debug')
+				const element = document.createElement('debug')
 				element.style.left = 100*px + 'vh'
 				element.style.top = 100*py + 'vh'
 				element.style.width = '0.5vh'
 				element.style.height = '0.5vh'
-				env.body.appendChild(element)
+				document.body.appendChild(element)
 			}
 			debug.benchmark = (name) => {
 				const benchy = {}

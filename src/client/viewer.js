@@ -1,7 +1,8 @@
 const Viewer = {}
 {
-	Viewer.load = (env) => {
-		Viewer.create = (blub, blubs, parent) => {
+	Viewer.link = (env) => {
+		Viewer.create = (blub, parent) => {
+			const blubs = env.blubs
 			const remove = () => {
 				container.remove()
 			}
@@ -9,39 +10,39 @@ const Viewer = {}
 			if (!blub) {
 				read = false
 			}
-			const container = env.createElement('div')
-			env.body.appendChild(container)
-			const form = env.createElement('form')
+			const container = document.createElement('div')
+			document.body.appendChild(container)
+			const form = document.createElement('form')
 			container.appendChild(form)
 			if (read) {
-				const icon = env.createElement('img')
+				const icon = document.createElement('img')
 				icon.src = blub.user.icon
 				form.appendChild(icon)
 				icon.onclick = () => {
 					blub.user.view()
 				}
 			}
-			const title = env.createElement('textarea')
+			const title = document.createElement('textarea')
 			title.cols = read && 21 || 26
 			title.placeholder = 'title'
 			title.readOnly = read
 			title.required = true
 			title.rows = 1
 			form.appendChild(title)
-			form.appendChild(env.createElement('br'))
-			const description = env.createElement('textarea')
+			form.appendChild(document.createElement('br'))
+			const description = document.createElement('textarea')
 			description.cols = 26
 			description.placeholder = 'description'
 			description.readOnly = read
 			description.required = true
 			description.rows = 20
 			form.appendChild(description)
-			form.appendChild(env.createElement('br'))
+			form.appendChild(document.createElement('br'))
 			if (blub) {
 				title.value = blub.title
 				description.value = blub.description
 			}
-			const close = env.createElement('button')
+			const close = document.createElement('button')
 			close.textContent = 'close'
 			form.appendChild(close)
 			close.onclick = () => {
@@ -53,7 +54,7 @@ const Viewer = {}
 				}
 			}
 			if (!read) {
-				const publish = env.createElement('button')
+				const publish = document.createElement('button')
 				publish.textContent = 'publish'
 				form.appendChild(publish)
 				form.onsubmit = (event) => {
@@ -64,19 +65,19 @@ const Viewer = {}
 			}
 			else {
 				/*
-				const comments = env.createElement('form')
+				const comments = document.createElement('form')
 				container.appendChild(comments)
-				const comment = env.createElement('p')
+				const comment = document.createElement('p')
 				comment.textContent = 'comment'
 				comments.appendChild(comment)
 				*/
-				const reply = env.createElement('button')
+				const reply = document.createElement('button')
 				reply.textContent = 'reply'
 				reply.onclick = (event) => {
 					event.preventDefault()
 					// class functions should affect state, but this does affect state, therefore its wrong maybe
 					// maybe instead it should be like viewer_manager.create or something idk
-					Viewer.create(undefined, blubs, blub.id)
+					Viewer.create(undefined, blub.id)
 				}
 				form.appendChild(reply)
 			}

@@ -1,6 +1,6 @@
 const Hooker = {}
 {
-	Hooker.load = (env) => {
+	Hooker.link = (env) => {
 		const Signal = env.require('Signal')
 		Hooker.create = () => {
 			const hooker = {}

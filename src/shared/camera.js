@@ -3,7 +3,7 @@ const Camera = {}
 	const max = Math.max
 	const min = Math.min
 	const sqrt = Math.sqrt
-	Camera.load = (env) => {
+	Camera.link = (env) => {
 		const Spring = env.require('Spring')
 		Camera.create = () => {
 			const camera = {}

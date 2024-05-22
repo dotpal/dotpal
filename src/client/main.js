@@ -1,4 +1,4 @@
-const Dotpal = {}
+const Main = {}
 {
 	const env = {}
 	{
@@ -7,7 +7,7 @@ const Dotpal = {}
 			const _name = '_' + name
 			if (!loaded[_name]) {
 				eval('loaded.' + _name + ' = ' + _name)
-				loaded[_name].load(env)
+				loaded[_name].link(env)
 			}
 			return loaded[_name]
 		}
@@ -15,10 +15,13 @@ const Dotpal = {}
 	const Blubs = env.require('Blubs')
 	const Bubbles = env.require('Bubbles')
 	const Camera = env.require('Camera')
+	const Chain = env.require('Chain')
 	const Clock = env.require('Clock')
 	const Debug = env.require('Debug')
 	const Geo = env.require('Geo')
+	const Hash = env.require('Hash')
 	const Hooker = env.require('Hooker')
+	const Login = env.require('Login')
 	const Network = env.require('Network')
 	const Random = env.require('Random')
 	const Signal = env.require('Signal')
@@ -28,109 +31,41 @@ const Dotpal = {}
 	const Tryer = env.require('Tryer')
 	const Users = env.require('Users')
 	const Viewer = env.require('Viewer')
-	env.createElement = (...values) => {
-		return document.createElement(...values)
-	}
-	env.body = document.body
-	env.head = document.head
-	const random = Random.create()
-	env.get_time = Clock.get_time
-	env.random = random.get
 	const debug = Debug.create()
 	env.print = debug.print
 	env.error = debug.error
-	const network = Network.create('localhost', 8000)
-	env.network = network
-	const camera = Camera.create()
-	env.camera = camera
-	const stepper = Stepper.create()
-	const geo = Geo.create()
-	env.geo = geo
-	const users = Users.create()
-	env.users = users
-	const bubbles = Bubbles.create()
-	env.bubbles = bubbles
-	const blubs = Blubs.create()
 	const store = Store.create()
-	const style = env.createElement('style')
-	style.textContent = `_include(style.css)`
-	env.head.appendChild(style)
-	let focused = {}
-	const focus = (blub) => {
-		focused = blub
-		bubbles.clear()
-		loading.enable()
-		blub.refresh_children()
-	}
-	const chain = {}
-	{
-		const links = []
-		const container = env.createElement('div')
-		container.style.backgroundColor = 'rgba(0, 0, 0, 0)'
-		container.style.height = 'auto'
-		container.style.left = '50%'
-		container.style.transform = 'translateX(-50%)'
-		container.style.width = 'auto'
-		env.body.appendChild(container)
-		chain.push = (blub) => {
-			const link = () => {
-				button.remove()
-			}
-			const button = env.createElement('button')
-			button.textContent = blub.title
-			container.appendChild(button)
-			button.onclick = () => {
-				for (let i = links.length; i--;) {
-					if (links[i] != link) {
-						links[i]()
-					}
-					else {
-						break
-					}
-				}
-				focus(blub)
-			}
-			links.push(link)
-			return link
-		}
-		chain.push({
-			title: '[local]',
-			refresh_children: () => {
-				blubs.fetch(geo.position.get())
-			}
-		})
-	}
 	const secret = Tryer.create(
 		() => {
-			const secret = store.get('secret')
-			if (secret) {
-				return [true, secret]
+			const hash = store.get('secret')
+			if (hash) {
+				return [true, hash]
 			}
 			return [false]
 		},
-		(secret1) => {
-			store.set('secret', secret1)
+		(hash) => {
+			store.set('secret', hash)
 		},
 		(passed) => {
 			if (passed) {
 				store.fetch(secret.get()).once((socket, options) => {
 					const user = users.create(options, secret.get())
-					const create = env.createElement('button')
+					const create = document.createElement('button')
 					create.textContent = 'create'
 					create.onclick = () => {
-						Viewer.create(undefined, blubs, focused.id)
+						Viewer.create(undefined, focused.id)
 					}
-					env.body.appendChild(create)
-					const profile = env.createElement('button')
+					document.body.appendChild(create)
+					const profile = document.createElement('button')
 					profile.textContent = 'profile'
 					profile.onclick = () => {
 						user.view()
 					}
-					env.body.appendChild(profile)
+					document.body.appendChild(profile)
 				})
 			}
 			else {
-				const login = Login.create(network, camera)
+				const login = Login.create()
 				login.submit.tie((email, password) => {
 					login.remove()
 					Hash.digest(email + password).then((hash) => {
@@ -144,16 +79,43 @@ const Dotpal = {}
 		}
 	)
 	env.secret = secret
+	const random = Random.create()
+	env.get_time = Clock.get_time
+	env.random = random.get
+	const network = Network.create('localhost', 8000)
+	env.network = network
+	const camera = Camera.create()
+	env.camera = camera
+	const stepper = Stepper.create()
+	const geo = Geo.create()
+	env.geo = geo
+	const users = Users.create()
+	env.users = users
+	const bubbles = Bubbles.create()
+	env.bubbles = bubbles
+	const blubs = Blubs.create()
+	env.blubs = blubs
+	const style = document.createElement('style')
+	style.textContent = '_include(style.css)'
+	document.head.appendChild(style)
+	const chain = Chain.create()
+	let focused = {}
+	env.focus = (blub) => {
+		focused = blub
+		bubbles.clear()
+		loading.enable()
+		blub.refresh_children()
+	}
 	secret.get()
 	const loading = {}
 	{
 		let sprite
 		loading.enable = () => {
 			if (!sprite) {
-				sprite = env.createElement('loading')
+				sprite = document.createElement('loading')
 				sprite.style.backgroundImage = 'url(_include(loading.gif))'
 				sprite.style.backgroundSize = '20vh'
-				env.body.appendChild(sprite)
+				document.body.appendChild(sprite)
 			}
 		}
 		loading.disable = () => {
@@ -173,7 +135,7 @@ const Dotpal = {}
 		camera.focus(bubbles.bubbles)
 	})
 	bubbles.click.tie((bubble) => {
-		focus(bubble.blub)
+		env.focus(bubble.blub)
 		chain.push(bubble.blub)
 	})
 	// idk how i feel about this yet, maybe stepper should be inserted into the singletons
@@ -185,12 +147,12 @@ const Dotpal = {}
 	geo.position.set([0.970713, 5.45788891708])
 	geo.request()
 	{
-		env.body.style.backgroundColor = '#e6e6e6'
-		env.body.style.backgroundImage = 'url(_include(globe.png))'
-		env.body.style.backgroundSize = '200vh'
-		// env.body.style.backgroundPosition = 'center center'
-		// env.body.style.backgroundPosition = -100*px/pz + 'vh' + ' ' + -100*py/pz + 'vh'
-		// env.body.style.backgroundSize = 10*200/pz + 'vh'
-		// env.body.style.transform = ''
+		document.body.style.backgroundColor = '#e6e6e6'
+		document.body.style.backgroundImage = 'url(_include(globe.png))'
+		document.body.style.backgroundSize = '200vh'
+		// document.body.style.backgroundPosition = 'center center'
+		// document.body.style.backgroundPosition = -100*px/pz + 'vh' + ' ' + -100*py/pz + 'vh'
+		// document.body.style.backgroundSize = 10*200/pz + 'vh'
+		// document.body.style.transform = ''
 	}
 }

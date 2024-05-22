@@ -3,7 +3,7 @@ const Random = {}
 	const duh_a = 1103515245
 	const duh_c = 12345
 	const duh_m = 2**31
-	Random.load = (env) => {
+	Random.link = (env) => {
 		Random.create = (value) => {
 			const self = {}
 			value = value || 0
