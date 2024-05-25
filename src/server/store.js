@@ -29,8 +29,8 @@ const Store = {}
 			store.get = (id) => {
 				return assets[id]
 			}
-			network.receive('get_asset').tie((socket, id) => {
-				network.share(socket, id, assets[id])
+			network.bounce('asset', (peer, id) => {
+				return assets[id]
 			})
 			store.source = (asset, attributes) => {
 				const clone = {...asset}

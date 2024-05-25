@@ -5,64 +5,75 @@ const Network = {}
 	Network.link = (env) => {
 		const Hooker = env.require('Hooker')
 		const Signal = env.require('Signal')
-		Network.create = (host, port) => {
+		Network.create = (address, port) => {
 			const network = {}
-			const sockets = []
+			const peers = {}
 			const hooker = Hooker.create()
-			network.close = Signal.create()
-			network.connect = Signal.create()
-			network.error = Signal.create()
+			const close = Signal.create()
+			const connect = Signal.create()
+			const error = Signal.create()
 			network.receive = hooker.get
-			const front = Bun.serve({
-				hostname: host,
-				port: port,
-				fetch(request) {
-					return new Response(`<!doctype html><body><script>"use strict"\n_include(../../build/index.html)</script>`, {headers: {'content-type': 'text/html'}})
+			const Peer = {}
+			Peer.create = (socket) => {
+				const peer = {}
+				peer.send = (...values) => {
+					socket.send(stringify(values))
 				}
-			})
-			const speed = Bun.serve({
-				hostname: host,
-				port: port + 1,
-				fetch(request, speed) {
-					speed.upgrade(request)
+				peers[socket] = peer
+				return peer
+			}
+			const host = Bun.serve({
+				hostname: address,
+				port: port,
+				cert: `_include(cert.pem)`,
+				key: `_include(key.pem)`,
+				fetch(request, host) {
+					if (host.upgrade(request)) {
+						return
+					}
+					return new Response(`<!doctype html><body><script>"use strict"\n_include(../../build/index.html)</script>`, {headers: {'content-type': 'text/html'}})
 				},
 				websocket: {
 					message(socket, data) {
 						const values = parse(data)
-						values.splice(1, 0, socket)
+						values.splice(1, 0, peers[socket])
 						hooker.call(...values)
 					},
 					open(socket) {
-						network.connect.call(socket)
-						sockets.push(socket)
+						const peer = Peer.create(socket)
+						connect.call(peer)
 					},
 					close(socket, code, data) {
-						sockets.splice(sockets.indexOf(socket), 1)
+						peers[socket] = undefined
 					},
 					drain(socket) {
 					}
-				}
+				},
 			})
 			network.send = (...values) => {
-				for (const i in sockets) {
-					sockets[i].send(stringify(values))
+				for (const socket in peers) {
+					peers[socket].send(...values)
 				}
-			}
-			network.send_but = (ignore_socket, ...values) => {
-				for (const i in sockets) {
-					const socket = sockets[i]
-					if (socket != ignore_socket) {
-						socket.send(stringify(values))
-					}
-				}
-			}
-			network.share = (socket, ...values) => {
-				socket.send(stringify(values))
 			}
 			network.close = () => {
-				front.stop()
-				speed.stop()
+				host.stop()
 			}
+			const bounces = {}
+			network.bounce = (key, callback) => {
+				bounces[key] = callback
+			}
+			network.fetch = (peer, ...values) => {
+				const unique = env.random()
+				peer.send('fetch', unique, ...values)
+				return receive(unique)
+			}
+			network.receive('fetch').tie((peer, unique, key, ...values) => {
+				if (!bounces[key]) {
+					env.error('no bounce', key)
+					return
+				}
+				peer.send(unique, bounces[key](peer, ...values))
+			})
 			return network
 		}
 	}

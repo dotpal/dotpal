@@ -4,14 +4,13 @@ const Users = {}
 		Users.create = () => {
 			const users = {}
 			const create = (options) => {
-				const network = env.network
-				const secret = env.secret
+				const server = env.server
 				const user = {}
 				user.bio = options.bio
 				user.icon = options.icon
 				user.name = options.name
 				let read = true
-				if (secret.get()) {
+				if (env.secret.get()) {
 					read = false
 				}
 				user.view = () => {
@@ -79,12 +78,12 @@ const Users = {}
 					}
 				}
 				user.publish = () => {
-					network.send('user', secret.get(), user)
+					server.send('user', env.secret.get(), user)
 				}
 				return user
 			}
 			// const receive = Signal.create()
-			// network.receive('user').tie((socket, user) => {
+			// server.receive('user').tie((peer, user) => {
 			// 	const user = create(options)
 			// 	receive.call(user)
 			// })

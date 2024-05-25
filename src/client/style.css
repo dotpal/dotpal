@@ -6,6 +6,10 @@
 	margin: 0;
 	text-rendering: optimizeSpeed;
 }
+html, body {
+	overflow: hidden;
+	height: 100%;
+}
 bubble {
 	animation: fun 1s;
 	background-image: url("_include(bubble.png)");

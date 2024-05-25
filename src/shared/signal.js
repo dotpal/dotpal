@@ -20,7 +20,7 @@ const Signal = {}
 				}
 				connection.call = callback
 				if (connections.length == 1) {
-					env.print('this is the second connection...')
+					// env.print('this is the second connection...')
 				}
 				return connection
 			}

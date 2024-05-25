@@ -9,6 +9,7 @@ const Store = {}
 		Store.create = () => {
 			const store = {}
 			const hooker = Hooker.create()
+			const server = env.server
 			const receive = hooker.get
 			const set = State.create()
 			const fetch = (id) => {
@@ -17,7 +18,7 @@ const Store = {}
 					receive.call(id, parse(asset))
 				}
 				else {
-					env.network.send('get_asset', id)
+					server.send('get_asset', id)
 				}
 			}
 			store.get = (id) => {
@@ -30,16 +31,13 @@ const Store = {}
 				localStorage[id] = stringify(value)
 			}
 			store.fetch = (id) => {
-				env.network.send('get_asset', id)
-				return env.network.receive(id)
+				server.send('get_asset', id)
+				return network.receive(id)
 			}
 			set.tie((id, asset) => {
 				localStorage[id] = stringify(asset)
 				receive.call(id, asset)
 			})
-			// env.network.receive('asset').tie((socket, id, asset) => {
-			// 	set.set(id, asset)
-			// })
 			return store
 		}
 	}

@@ -11,13 +11,12 @@ const Geo = {}
 		const State = env.require('State')
 		Geo.create = () => {
 			const geo = {}
-			geo.position = State.create()
 			const pin = document.createElement('img')
 			pin.src = '_include(pin.png)'
 			pin.style.position = 'fixed'
 			pin.style.transform = 'translate(-50%, -100%)'
 			document.body.appendChild(pin)
-			geo.position.tie(([cx, cy]) => {
+			geo.position = State.create(([cx, cy]) => {
 				pin.style.left = 100*IP*cy + 'vh'
 				pin.style.top = 100*IP*cx + 'vh'
 			})

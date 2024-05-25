@@ -18,7 +18,8 @@ const get_data_url = (folder, file) => {
 	if (type) {
 		return `data:${type};base64,${content}`
 	}
-	console.error(folder + file + ' type is missing missing')
+	return atob(content)
+	// console.error(folder + file + ' type is missing missing')
 }
 const array_swap = (array, ia, ib) => {
 	const temp = array[ia]

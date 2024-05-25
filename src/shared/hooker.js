@@ -10,7 +10,7 @@ const Hooker = {}
 					return signals[key]
 				}
 				else {
-					env.print('new listener', key)
+					// env.print('new listener', key)
 					return signals[key] = Signal.create() // wtf lol
 				}
 			}

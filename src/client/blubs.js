@@ -6,8 +6,7 @@ const Blubs = {}
 			const blubs = {}
 			const bubbles = env.bubbles
 			const geo = env.geo
-			const network = env.network
-			const secret = env.secret
+			const server = env.server
 			const users = env.users
 			const create = Signal.create((options) => {
 				const blub = {}
@@ -21,7 +20,7 @@ const Blubs = {}
 				}
 				blub.refresh_children = () => {
 					bubbles.clear()
-					network.send('get_blub_children', blub.id)
+					server.send('get_blub_children', blub.id)
 				}
 				return blub
 			})
@@ -31,14 +30,14 @@ const Blubs = {}
 				options.description = description
 				options.position = geo.position.get()
 				options.title = title
-				network.send('blub', secret.get(), options, parent)
+				server.send('blub', env.secret.get(), options, parent)
 			}
-			network.receive('blub').tie((socket, options) => {
+			server.receive('blub').tie((options, b) => {
 				create.call(options)
 			})
 			blubs.fetch = (position) => {
 				bubbles.clear()
-				network.send('get_blubs_by_position', position)
+				server.send('get_blubs_by_position', position)
 			}
 			blubs.clear = () => {
 				print('clear blubs')

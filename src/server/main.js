@@ -25,7 +25,7 @@ const Main = {}
 	const random = Random.create()
 	env.get_time = Clock.get_time
 	env.random = random.get
-	const network = Network.create('localhost', 8000)
+	const network = Network.create('172.233.81.226', 443)
 	const store = Store.create('store.json', network)
 	{
 		const get_square_distance = (a, b) => {
@@ -35,7 +35,7 @@ const Main = {}
 			const dy = by - ay
 			return dx*dx + dy*dy
 		}
-		network.receive('blub').tie((socket, secret, options, parent) => {
+		network.receive('blub').tie((peer, secret, options, parent) => {
 			if (store.get(secret)) {
 				const asset = store.create('blub')
 				asset.children = []
@@ -50,25 +50,25 @@ const Main = {}
 				network.send('blub', store.source(asset, ['user']))
 			}
 		})
-		network.receive('get_blubs_by_position').tie((socket, position) => {
+		network.receive('get_blubs_by_position').tie((peer, position) => {
 			for (const id in store.assets) {
 				const asset = store.get(id)
 				if (asset.type == 'blub' && asset.parent == undefined && get_square_distance(position, asset.position) < 0.001) {
-					network.share(socket, 'blub', store.source(asset, ['user']))
+					peer.send('blub', store.source(asset, ['user']))
 				}
 			}
 		})
-		network.receive('get_blub_children').tie((socket, parent) => {
+		network.receive('get_blub_children').tie((peer, parent) => {
 			const children = store.get(parent).children
 			for (const i in children) {
 				const child = children[i]
 				const asset = store.get(child)
-				network.share(socket, 'blub', store.source(asset, ['user']))
+				peer.send('blub', store.source(asset, ['user']))
 			}
 		})
 	}
 	{
-		network.receive('user').tie((socket, secret, options) => {
+		network.receive('user').tie((peer, secret, options) => {
 			options = options || {}
 			if (store.get(secret)) {
 				const asset = store.get(secret)
@@ -76,7 +76,7 @@ const Main = {}
 				asset.email = options.email
 				asset.icon = options.icon
 				asset.name = options.name
-				network.share(socket, 'user', asset)
+				peer.send('user', asset)
 				return
 			}
 			const asset = store.create('user', secret)
@@ -84,7 +84,7 @@ const Main = {}
 			asset.email = options.email
 			asset.icon = 'https://qph.cf2.quoracdn.net/main-qimg-407c4b6f60302d6e9c55695adef129e0-pjlq'
 			asset.name = 'Noobie'
-			network.share(socket, 'user', asset)
+			peer.send('user', asset)
 		})
 	}
 	// idk if this should be done externally or not but whatever
@@ -93,5 +93,3 @@ const Main = {}
 		network.close()
 	})
 }
-// const dotpal = Main.create()
-// dotpal.run()
