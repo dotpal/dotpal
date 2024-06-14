@@ -9,9 +9,10 @@ const Bubbles = {}
 		return [apx + (o - (ar + br))*ox/o, apy + (o - (ar + br))*oy/o]
 	}
 	Bubbles.link = (env) => {
-		const Signal = env.require('Signal')
-		const Spring = env.require('Spring')
-		Bubbles.create = () => {
+		const Signal = env.require("Signal")
+		const Spring = env.require("Spring")
+		const Viewer = env.require("Viewer")
+		Bubbles.create = (...args) => {
 			const bubbles = {}
 			const all = []
 			bubbles.bubbles = all
@@ -43,23 +44,25 @@ const Bubbles = {}
 				let py = Spring.create()
 				let r = 1
 				all.push(bubble)
-				const link = document.createElement('a')
+				const link = document.createElement("a")
 				document.body.appendChild(link)
 				link.onclick = () => {
 					bubbles.click.call(bubble)
 				}
-				const sprite = document.createElement('bubble')
+				const sprite = document.createElement("bubble")
 				sprite.textContent = blub.title.substr(0, 12)
 				link.appendChild(sprite)
 				const present = () => {
 					const [cpx, cpy, cpz] = env.camera.get_geometry()
-					sprite.style.left = 100*(0.5*innerWidth/innerHeight + (px.get_position() - r - cpx)/cpz) + 'vh' // fucking stupid percentages
-					sprite.style.top = 100*(0.5 + (py.get_position() - r - cpy)/cpz) + 'vh'
-					sprite.style.width = 100*2*r/cpz + 'vh'
-					sprite.style.height = 100*2*r/cpz + 'vh'
-					sprite.style.lineHeight = 100*2*r/cpz + 'vh'
-					sprite.style.fontSize = 100*0.3*r/cpz + 'vh'
-					// sprite.style.backgroundImage = 'url(_include(bubble.png))' // this is probably using a lot of memory
+					// fucking stupid percentages
+					sprite.style.left = 100*(0.5*innerWidth/innerHeight + (px.get_position() - r - cpx)/cpz) + "vh"
+					sprite.style.top = 100*(0.5 + (py.get_position() - r - cpy)/cpz) + "vh"
+					sprite.style.width = 100*2*r/cpz + "vh"
+					sprite.style.height = 100*2*r/cpz + "vh"
+					sprite.style.lineHeight = 100*2*r/cpz + "vh"
+					sprite.style.fontSize = 100*0.3*r/cpz + "vh"
+					// this is probably using a lot of memory
+					// sprite.style.backgroundImage = "url(_include(bubble.png))"
 				}
 				bubble.set_target = (t) => {
 					const [tx1, ty1] = t
@@ -77,6 +80,9 @@ const Bubbles = {}
 					py.step(dt)
 					present()
 				}
+				bubble.view = () => {
+					Viewer.create(blub)
+				}
 				bubble.remove = () => {
 					sprite.remove()
 					all.splice(all.indexOf(bubble), 1)
@@ -84,7 +90,7 @@ const Bubbles = {}
 				return bubble
 			}
 			bubbles.step = (dt) => {
-				// maybe our code should be 'pull only' so we dont allow this pushing behavior
+				// maybe our code should be "pull only" so we dont allow this pushing behavior
 				for (const i in all) {
 					const bubble = all[i]
 					bubble.set_target(get_acting_target(i))

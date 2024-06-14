@@ -6,8 +6,8 @@ x Create blubs on blubs like threads on twitter
 x Blubs get smaller over time as they approach their expiration date
 - Blub should grow as people comment, interact, follow, etc. the blub
 x Blubs should have descriptions
-- Blub expiration date
-- Bubble should disappear from expiration date
+^ Blub expiration date
+^ Bubble should disappear from expiration date
 - Blubs should have timestamps
 x Blubs should have user who blubbed
 x Encode the coordinates, the timestamps, etc. for blubs
@@ -25,6 +25,7 @@ x Account creation dates
 ^ Clicking on the bubble should display the title, then clicking again should view the bubble
 ^ The size of bubbles should be proportional to views/time
 - bubble health += 5 - time looked at bubble
+- Reply to specific parts of a post by quoting contents
 
 [Todo soon now]
 x Send in chat a preview of the current version for taishi

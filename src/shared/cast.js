@@ -17,7 +17,7 @@ const Cast = {}
 		const b = avbp - bvap + bvbp - avap
 		const c = 0.25*(apap - 2*apbp + bpbp - (ar + br)*(ar + br))
 		const t = zeros.solve(a, -b, c)[0]
-		//if (t < 0) env.print('uhhh t < 0')
+		//if (t < 0) env.print("uhhh t < 0")
 		//*/
 		const t = (-avap + avbp - bvap + bvbp - sqrt((avap - avbp + bvap - bvbp)*(avap - avbp + bvap - bvbp) - (avav + 2*avbv + bvbv)*(apap - 2*apbp + bpbp - (ar + br)*(ar + br))))/(avav + 2*avbv + bvbv)
 		return t

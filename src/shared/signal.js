@@ -1,50 +1,48 @@
 const Signal = {}
 {
-	Signal.link = (env) => {
-		Signal.create = (pass) => {
-			const signal = {}
-			let connections = []
-			signal.once = (callback) => {
-				let temporary
-				temporary = signal.tie((...values) => {
-					callback(...values)
-					temporary.remove()
-				})
-				return temporary
-			}
-			signal.tie = (callback) => {
-				const connection = {}
-				connections.push(connection)
-				connection.remove = () => {
-					connections.splice(connections.indexOf(connection), 1)
-				}
-				connection.call = callback
-				if (connections.length == 1) {
-					// env.print('this is the second connection...')
-				}
-				return connection
-			}
-			if (!pass) {
-				signal.call = (...values) => {
-					for (const i in connections) {
-						connections[i].call(...values)
-					}
-				}
-			}
-			else {
-				signal.call = (...values) => {
-					values = [pass(...values)]
-					for (const i in connections) {
-						connections[i].call(...values)
-					}
-				}
-			}
-			signal.remove = () => {
-				for (const i in connections) {
-					connections[i].remove()
-				}
-			}
-			return signal
+	Signal.create = (pass) => {
+		const signal = {}
+		let connections = []
+		signal.once = (callback) => {
+			let connection
+			connection = signal.tie((...args) => {
+				connection.remove()
+				callback(...args)
+			})
+			return connection
 		}
+		signal.tie = (callback) => {
+			const connection = {}
+			connections.push(connection)
+			connection.remove = () => {
+				connections.splice(connections.indexOf(connection), 1)
+			}
+			connection.call = callback
+			if (connections.length >= 2) {
+				// console.trace("this is the second connection...")
+			}
+			return connection
+		}
+		if (!pass) {
+			signal.call = (...args) => {
+				for (const connection of connections) {
+					connection.call(...args)
+				}
+			}
+		}
+		else {
+			signal.call = (...args) => {
+				args = [pass(...args)]
+				for (const connection of connections) {
+					connection.call(...args)
+				}
+			}
+		}
+		signal.remove = () => {
+			for (const connection of connections) {
+				connection.remove()
+			}
+		}
+		return signal
 	}
 }

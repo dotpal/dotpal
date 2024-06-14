@@ -1,21 +1,21 @@
 const Chain = {}
 {
 	Chain.link = (env) => {
-		Chain.create = () => {
+		Chain.create = (...args) => {
 			const chain = {}
 			const links = []
-			const container = document.createElement('div')
-			container.style.backgroundColor = 'rgba(0, 0, 0, 0)'
-			container.style.height = 'auto'
-			container.style.left = '50%'
-			container.style.transform = 'translateX(-50%)'
-			container.style.width = 'auto'
+			const container = document.createElement("div")
+			container.style.backgroundColor = "rgba(0, 0, 0, 0)"
+			container.style.height = "auto"
+			container.style.left = "50%"
+			container.style.transform = "translateX(-50%)"
+			container.style.width = "auto"
 			document.body.appendChild(container)
 			chain.push = (blub) => {
 				const link = () => {
 					button.remove()
 				}
-				const button = document.createElement('button')
+				const button = document.createElement("button")
 				button.textContent = blub.title
 				container.appendChild(button)
 				button.onclick = () => {
@@ -33,7 +33,7 @@ const Chain = {}
 				return link
 			}
 			chain.push({
-				title: '[local]',
+				title: "[local]",
 				refresh_children: () => {
 					env.blubs.fetch(env.geo.position.get())
 				}

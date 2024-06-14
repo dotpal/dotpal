@@ -1,27 +1,16 @@
 const Network = {}
 {
-	const parse = JSON.parse
-	const stringify = JSON.stringify
 	Network.link = (env) => {
-		const Hooker = env.require('Hooker')
-		const Signal = env.require('Signal')
+		const Hooker = env.require("Hooker")
+		const Serial = env.require("Serial")
+		const Signal = env.require("Signal")
 		Network.create = (address, port) => {
 			const network = {}
-			const peers = {}
+			const sockets = []
 			const hooker = Hooker.create()
-			const close = Signal.create()
 			const connect = Signal.create()
-			const error = Signal.create()
-			network.receive = hooker.get
-			const Peer = {}
-			Peer.create = (socket) => {
-				const peer = {}
-				peer.send = (...values) => {
-					socket.send(stringify(values))
-				}
-				peers[socket] = peer
-				return peer
-			}
+			const receive = hooker.get
+			let connections = 0
 			const host = Bun.serve({
 				hostname: address,
 				port: port,
@@ -31,48 +20,68 @@ const Network = {}
 					if (host.upgrade(request)) {
 						return
 					}
-					return new Response(`<!doctype html><body><script>"use strict"\n_include(../../build/index.html)</script>`, {headers: {'content-type': 'text/html'}})
+					return new Response('<!doctype html><meta name=viewport content=initial-scale=1><link rel=icon href=_include(../client/bubble.png)><link rel=apple-touch-icon href=_include(../client/bubble.png)><body><script>"use strict"\n_include(../../build/index.html)</script>', {headers: {"content-type": "text/html"}})
 				},
 				websocket: {
 					message(socket, data) {
-						const values = parse(data)
-						values.splice(1, 0, peers[socket])
-						hooker.call(...values)
+						const args = Serial.decode(data)
+						args.splice(1, 0, socket)
+						hooker.call(...args)
 					},
 					open(socket) {
-						const peer = Peer.create(socket)
-						connect.call(peer)
+						sockets[connections] = socket
+						++connections
+						connect.call(socket)
 					},
 					close(socket, code, data) {
-						peers[socket] = undefined
+						sockets[sockets.indexOf(socket)] = sockets[connections - 1]
+						--connections
 					},
 					drain(socket) {
+						env.print("gonna drain a socket but idk what that means")
 					}
 				},
 			})
-			network.send = (...values) => {
-				for (const socket in peers) {
-					peers[socket].send(...values)
+			const send_to = (socket, ...args) => {
+				socket.send(Serial.encode(args))
+			}
+			network.send = (...args) => {
+				for (const i in sockets) {
+					const socket = sockets[i]
+					send_to(socket, ...args)
+				}
+			}
+			network.send_but = (ignore, ...args) => {
+				for (const i in sockets) {
+					const socket = sockets[i]
+					if (socket != ignore) {
+						send_to(socket, ...args)
+					}
 				}
 			}
 			network.close = () => {
 				host.stop()
 			}
+			network.fetch = (socket, ...args) => {
+				const unique = env.get_random()
+				send_to(socket, "fetch", unique, ...args)
+				return receive(unique)
+			}
 			const bounces = {}
 			network.bounce = (key, callback) => {
 				bounces[key] = callback
 			}
-			network.fetch = (peer, ...values) => {
-				const unique = env.random()
-				peer.send('fetch', unique, ...values)
-				return receive(unique)
-			}
-			network.receive('fetch').tie((peer, unique, key, ...values) => {
+			receive("fetch").tie((socket, unique, key, ...args) => {
 				if (!bounces[key]) {
-					env.error('no bounce', key)
+					env.error("no bounce", key)
 					return
 				}
-				peer.send(unique, bounces[key](peer, ...values))
+				send_to(socket, unique, bounces[key](socket, ...args))
+			})
+			network.send_to = send_to
+			network.receive = receive
+			network.bounce("connections", () => {
+				return connections
 			})
 			return network
 		}

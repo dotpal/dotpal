@@ -1,11 +1,12 @@
 // thanks to trey
-const Zeros = {}
+const Poly = {}
 {
 	const sqrt = Math.sqrt
 	const cbrt = Math.cbrt
 	const epsilon = 1e-10
 	// solve results are guaranteed real && sorted.
-	Zeros.link = (env) => {
+	Poly.link = (env) => {
+		const Logic = env.require("Logic")
 		const or = Logic.or
 		const is = Logic.is
 		const solve = (a, b, c, d, e) => {
@@ -107,6 +108,6 @@ const Zeros = {}
 				return []
 			}
 		}
-		Zeros.solve = solve
+		Poly.solve = solve
 	}
 }

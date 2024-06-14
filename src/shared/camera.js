@@ -4,8 +4,8 @@ const Camera = {}
 	const min = Math.min
 	const sqrt = Math.sqrt
 	Camera.link = (env) => {
-		const Spring = env.require('Spring')
-		Camera.create = () => {
+		const Spring = env.require("Spring")
+		Camera.create = (...args) => {
 			const camera = {}
 			let subjects = []
 			const px = Spring.create()
@@ -16,7 +16,7 @@ const Camera = {}
 			let lx
 			let ly
 			/*
-			onclick = (event) => {
+			onclick = () => {
 				if (event.target == env.documentElement) {
 					camera.focus()
 				}
@@ -39,8 +39,7 @@ const Camera = {}
 					uy = -1/0
 					lx = +1/0
 					ly = +1/0
-					for (const i in subjects) {
-						const subject = subjects[i]
+					for (const subject of subjects) {
 						const [px, py, r] = subject.get_geometry()
 						ux = max(ux, px + r)
 						uy = max(uy, py + r)

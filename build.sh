@@ -1,5 +1,5 @@
 # client
-bun include.js src/client/ >> build/index.html
+bun include.js src/client/ > build/index.html
 # server
 printf '"use strict"\n' > build/dotpal.js
 bun include.js src/server/ >> build/dotpal.js

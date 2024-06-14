@@ -1,8 +1,8 @@
 const Hooker = {}
 {
 	Hooker.link = (env) => {
-		const Signal = env.require('Signal')
-		Hooker.create = () => {
+		const Signal = env.require("Signal")
+		Hooker.create = (...args) => {
 			const hooker = {}
 			const signals = {}
 			hooker.get = (key) => {
@@ -10,16 +10,17 @@ const Hooker = {}
 					return signals[key]
 				}
 				else {
-					// env.print('new listener', key)
-					return signals[key] = Signal.create() // wtf lol
+					// env.print("new listener", key)
+					// wtf lol
+					return signals[key] = Signal.create()
 				}
 			}
-			hooker.call = (key, ...values) => {
+			hooker.call = (key, ...args) => {
 				if (signals[key]) {
-					signals[key].call(...values)
+					signals[key].call(...args)
 				}
 				else {
-					env.error('no key', key)
+					env.error("no key", key, ...args)
 				}
 			}
 			return hooker

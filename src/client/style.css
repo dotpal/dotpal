@@ -6,7 +6,7 @@
 	margin: 0;
 	text-rendering: optimizeSpeed;
 }
-html, body {
+body {
 	overflow: hidden;
 	height: 100%;
 }
@@ -84,7 +84,7 @@ textarea, input {
 	padding: 1.5vh;
 	resize: none;
 }
-img {
+.icon {
 	border-radius: 1vh;
 	height: 6vh;
 	margin-bottom: 0.2vh;
