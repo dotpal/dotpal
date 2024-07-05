@@ -53,8 +53,9 @@ const Viewer = {}
 			}
 			if (!read) {
 				const publish = document.createElement("button")
-				publish.textContent = "publish"
+				publish.textContent = "publish tex"
 				form.appendChild(publish)
+				console.log("submit blub")
 				form.onsubmit = () => {
 					event.preventDefault()
 					env.blubs.easy_create(title.value, description.value)

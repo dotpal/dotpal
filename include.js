@@ -35,7 +35,7 @@ const replace = (input, search, replacement) => {
 	return input.split(search).join(replacement)
 }
 const get_paths = (folder) => {
-	return Bun.spawnSync(["dir", folder]).stdout.toString().split(/\s+/).filter(Boolean)
+	return Bun.spawnSync(["ls", folder]).stdout.toString().split(/\s+/).filter(Boolean)
 }
 const folders = [process.argv[2], "src/shared/"]
 const files = {}

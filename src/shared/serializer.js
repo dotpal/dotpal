@@ -14,6 +14,7 @@ const Serializer = {}
 				decoders[key] = callback
 			}
 			const get_descending_typed = (stack) => {
+				console.log("stack", stack)
 				const descending_typed = []
 				while (stack.length > 0) {
 					const [parent, i] = stack.pop()
@@ -34,6 +35,7 @@ const Serializer = {}
 				return descending_typed
 			}
 			const decode = (data) => {
+				console.log("decode", data)
 				const args = parse(data)
 				// env.print("in decode", args)
 				const parent = [args]
@@ -59,6 +61,7 @@ const Serializer = {}
 				return args
 			}
 			const encode = (args) => {
+				console.log("encode", args)
 				// env.print("in encode", args)
 				const parent = [args]
 				const stack = [[parent, 0]]

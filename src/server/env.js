@@ -14,6 +14,7 @@ const Env = {}
 		if (!loaded[_name]) {
 			eval("loaded." + _name + " = " + _name)
 			if (loaded[_name].link) {
+				console.log("linking", _name)
 				loaded[_name].link(Env)
 			}
 		}
@@ -39,7 +40,7 @@ const Env = {}
 	Env.serializer = serializer
 	const random = Random.create()
 	Env.get_random = random.get
-	const network = Network.create("172.233.81.226", 443)
+	const network = Network.create("localhost", 13371)
 	Env.network = network
 	const store = Store.create("store.json")
 	Env.store = store

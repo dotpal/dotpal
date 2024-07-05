@@ -9,6 +9,7 @@ const Env = {}
 		if (!loaded[_name]) {
 			eval("loaded." + _name + " = " + _name)
 			if (loaded[_name].link) {
+				console.log("linking", _name)
 				// env != env so this isnt really right
 				loaded[_name].link(env)
 			}
@@ -207,7 +208,7 @@ const Env = {}
 	env.store = store
 	const random = Random.create()
 	env.get_random = random.get
-	const network = Network.create("dotp.al", 443)
+	const network = Network.create("localhost", 13371)
 	env.network = network
 	const geo = Geo.create()
 	const get_position = () => {
