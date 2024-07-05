@@ -5,7 +5,7 @@ const Poly = {}
 	const cbrt = Math.cbrt
 	const epsilon = 1e-10
 	// solve results are guaranteed real && sorted.
-	Poly.link = (env) => {
+	const link = (env) => {
 		const Logic = env.require("Logic")
 		const or = Logic.or
 		const is = Logic.is
@@ -22,6 +22,7 @@ const Poly = {}
 				const s = or(h2, h0)
 				if (s < epsilon) {
 					const [f0, f1] = solve(1, p, r)
+					// idk if this or should be here
 					if (!is(f1) || f1 < 0) {
 						return []
 					}
@@ -110,4 +111,5 @@ const Poly = {}
 		}
 		Poly.solve = solve
 	}
+	Poly.link = link
 }

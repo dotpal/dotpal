@@ -8,15 +8,14 @@ const Bubbles = {}
 		const o = sqrt(ox*ox + oy*oy)
 		return [apx + (o - (ar + br))*ox/o, apy + (o - (ar + br))*oy/o]
 	}
-	Bubbles.link = (env) => {
+	const link = (env) => {
 		const Signal = env.require("Signal")
 		const Spring = env.require("Spring")
 		const Viewer = env.require("Viewer")
-		Bubbles.create = (...args) => {
+		const create = (...args) => {
 			const bubbles = {}
 			const all = []
-			bubbles.bubbles = all
-			bubbles.click = Signal.create()
+			const click = Signal.create()
 			const get_acting_target = (ai) => {
 				const [apx, apy, ra] = all[ai].get_geometry()
 				let min_value = 1/0
@@ -37,9 +36,8 @@ const Bubbles = {}
 				}
 				return [0, 0]
 			}
-			bubbles.create = (blub) => {
+			const create = (blub) => {
 				const bubble = {}
-				bubble.blub = blub
 				let px = Spring.create()
 				let py = Spring.create()
 				let r = 1
@@ -47,10 +45,10 @@ const Bubbles = {}
 				const link = document.createElement("a")
 				document.body.appendChild(link)
 				link.onclick = () => {
-					bubbles.click.call(bubble)
+					click.call(bubble)
 				}
 				const sprite = document.createElement("bubble")
-				sprite.textContent = blub.title.substr(0, 12)
+				sprite.textContent = blub.get_title().substr(0, 12)
 				link.appendChild(sprite)
 				const present = () => {
 					const [cpx, cpy, cpz] = env.camera.get_geometry()
@@ -64,48 +62,59 @@ const Bubbles = {}
 					// this is probably using a lot of memory
 					// sprite.style.backgroundImage = "url(_include(bubble.png))"
 				}
-				bubble.set_target = (t) => {
+				const set_target = (t) => {
 					const [tx1, ty1] = t
 					px.set_target(tx1)
 					py.set_target(ty1)
 				}
-				bubble.get_geometry = () => {
+				const get_geometry = () => {
 					return [px.get_position(), py.get_position(), r]
 				}
-				bubble.set_radius = (r1) => {
+				const set_radius = (r1) => {
 					r = r1
 				}
-				bubble.step = (dt) => {
+				const step = (dt) => {
 					px.step(dt)
 					py.step(dt)
 					present()
 				}
-				bubble.view = () => {
+				const view = () => {
 					Viewer.create(blub)
 				}
-				bubble.remove = () => {
+				const remove = () => {
 					sprite.remove()
 					all.splice(all.indexOf(bubble), 1)
 				}
+				bubble.get_geometry = get_geometry
+				bubble.remove = remove
+				bubble.set_radius = set_radius
+				bubble.set_target = set_target
+				bubble.view = view
 				return bubble
 			}
-			bubbles.step = (dt) => {
+			const step = (dt) => {
 				// maybe our code should be "pull only" so we dont allow this pushing behavior
 				for (const i in all) {
 					const bubble = all[i]
 					bubble.set_target(get_acting_target(i))
 					bubble.step(dt)
 					const [px, py, r] = bubble.get_geometry()
-					const elapsed = env.get_time() - bubble.blub.time
+					const elapsed = env.get_time() - bubble.blub.get_time()
 					// bubble.set_radius(exp(-0.00001*elapsed))
 				}
 			}
-			bubbles.clear = () => {
+			const clear = () => {
 				for (let i = all.length; i--;) {
 					all[i].remove()
 				}
 			}
+			bubbles.bubbles = all
+			bubbles.click = click
+			bubbles.create = create
+			bubbles.step = step
 			return bubbles
 		}
+		Bubbles.create = create
 	}
+	Bubbles.link = link
 }

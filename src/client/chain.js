@@ -1,7 +1,7 @@
 const Chain = {}
 {
-	Chain.link = (env) => {
-		Chain.create = (...args) => {
+	const link = (env) => {
+		const create = (...args) => {
 			const chain = {}
 			const links = []
 			const container = document.createElement("div")
@@ -11,12 +11,12 @@ const Chain = {}
 			container.style.transform = "translateX(-50%)"
 			container.style.width = "auto"
 			document.body.appendChild(container)
-			chain.push = (blub) => {
+			const push = (blub) => {
 				const link = () => {
 					button.remove()
 				}
 				const button = document.createElement("button")
-				button.textContent = blub.title
+				button.textContent = blub.get_title()
 				container.appendChild(button)
 				button.onclick = () => {
 					for (let i = links.length; i--;) {
@@ -32,13 +32,16 @@ const Chain = {}
 				links.push(link)
 				return link
 			}
-			chain.push({
+			push({
 				title: "[local]",
 				refresh_children: () => {
-					env.blubs.fetch(env.geo.position.get())
+					env.blubs.fetch(env.get_position())
 				}
 			})
+			chain.push = push
 			return chain
 		}
+		Chain.create = create
 	}
+	Chain.link = link
 }

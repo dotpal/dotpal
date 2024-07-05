@@ -1,48 +1,57 @@
 const Signal = {}
 {
-	Signal.create = (pass) => {
-		const signal = {}
-		let connections = []
-		signal.once = (callback) => {
-			let connection
-			connection = signal.tie((...args) => {
-				connection.remove()
-				callback(...args)
+	const create = (tfunc) => {
+		const sig = {}
+		const cons = []
+		let call
+		const tie = (call) => {
+			const con = {}
+			cons.push(con)
+			con.remove = () => {
+				cons.splice(cons.indexOf(con), 1)
+			}
+			if (cons.length >= 2) {
+				// console.trace("this is the second con...")
+			}
+			con.call = call
+			return con
+		}
+		const once = (call) => {
+			const con = tie((...args) => {
+				con.remove()
+				call(...args)
 			})
-			return connection
+			return con
 		}
-		signal.tie = (callback) => {
-			const connection = {}
-			connections.push(connection)
-			connection.remove = () => {
-				connections.splice(connections.indexOf(connection), 1)
-			}
-			connection.call = callback
-			if (connections.length >= 2) {
-				// console.trace("this is the second connection...")
-			}
-			return connection
-		}
-		if (!pass) {
-			signal.call = (...args) => {
-				for (const connection of connections) {
-					connection.call(...args)
+		const transform = (tfunc) => {
+			if (!tfunc) {
+				call = (...args) => {
+					for (const con of cons) {
+						con.call(...args)
+					}
 				}
 			}
-		}
-		else {
-			signal.call = (...args) => {
-				args = [pass(...args)]
-				for (const connection of connections) {
-					connection.call(...args)
+			else {
+				call = (...args) => {
+					args = tfunc(...args)
+					for (const con of cons) {
+						con.call(...args)
+					}
 				}
 			}
+			sig.call = call
 		}
-		signal.remove = () => {
-			for (const connection of connections) {
-				connection.remove()
+		const remove = () => {
+			for (const con of cons) {
+				con.remove()
 			}
 		}
-		return signal
+		sig.once = once
+		sig.remove = remove
+		sig.tie = tie
+		sig.transform = transform
+		transform(tfunc)
+		return sig
 	}
+	Signal.create = create
 }

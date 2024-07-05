@@ -1,74 +1,114 @@
 const Blubs = {}
 {
-	Blubs.link = (env) => {
+	const link = (env) => {
 		const Signal = env.require("Signal")
-		const Utils = env.require("Utils")
-		Blubs.create = (...args) => {
+		const create = () => {
 			const blubs = {}
-			blubs.create = (options, local) => {
+			const blub_from_id = {}
+			const receive = Signal.create()
+			const create = (options, local) => {
+				// env.trace("create blub with", options)
 				const blub = {}
-				blub.user = options.user
-				blub.adjust = (options) => {
-					Utils.adjust(blub, options)
+				let description = options.description || env.error("options missing description")
+				let id = options.id || env.error("options missing id")
+				let position = options.position || env.error("options missing position")
+				let time = options.time || env.error("options missing time")
+				let title = options.title || env.error("options missing title")
+				let user = options.user || env.error("options missing user")
+				if (blub_from_id[id]) {
+					const blub = blub_from_id[id]
+					blub.adjust(options)
+					return blub
 				}
-				blub.view = () => {
+				else {
+					// env.print("create blub", id, "with options", options)
+					blub_from_id[id] = blub
+				}
+				const adjust = (options) => {
+					// env.print("adjust blub", id, "with options", options)
+				}
+				const view = () => {
 					env.viewer.open(blub)
 				}
-				blub.senc = () => {
-					const sdata = {}
-					// do i need id?
-					sdata.description = blub.description
-					sdata.id = blub.id
-					sdata.position = env.geo.position.get()
-					sdata.title = blub.title
-					// sdata.user = blub.user.senc()
-					sdata.user = blub.user.id
-					return sdata
+				const replicate = () => {
+					env.network.send("blub", blub)
 				}
-				blub.send = () => {
-					const sdata = blub.senc()
-					env.network.send("blub", sdata)
+				const get_description = () => {
+					return description
 				}
-				blub.adjust(options)
+				const get_id = () => {
+					return id
+				}
+				const get_position = () => {
+					return position
+				}
+				const get_time = () => {
+					return time
+				}
+				const get_title = () => {
+					return title
+				}
 				if (!local) {
-					blub.send()
+					replicate()
 				}
-				blubs.receive.call(blub)
+				// const comment = Signal.create((comment, local) => {
+				// 	if (!local) {
+				// 		env.network.send("comment", comment)
+				// 	}
+				// })
+				receive.call(blub)
+				blub.adjust = adjust
+				// blub.comment = comment
+				blub.get_description = get_description
+				blub.get_id = get_id
+				blub.get_position = get_position
+				blub.get_time = get_time
+				blub.get_title = get_title
+				blub.user = user
+				blub.type = "blub"
 				return blub
 			}
-			blubs.receive = Signal.create()
-			blubs.easy_create = (title, description) => {
-				const blub = blubs.create({
+			const easy_create = (title, description) => {
+				const blub = create({
 					description: description,
+					id: env.get_random(),
+					position: env.get_position(),
 					time: env.get_time(),
 					title: title,
-					user: env.get_user(),
+					user: env.user,
 				})
-				// this is now doing more than just create, maybe this shouldnt be easy_create
 				return blub
 			}
-			blubs.cdec = (cdata) => {
-				const options = Utils.get_copy(cdata)
-				options.user = env.users.cdec(options.user)
-				const local = true
-				const blub = blubs.create(options, local)
-				return blub
+			const fetch_blubs_by_position = (position) => {
+				return env.network.fetch("blubs_by_position", position)
 			}
-			const receive = env.network.receive("blub")
-			receive.tie((cdata) => {
-				// options isnt really options until the user is there, so we replace the user attribute with a class object
-				// this generally isnt a good practice but because options isnt being used by anything else so its fine
-				// either things should be immutable or the interpreter should recognize that youre making changes to it and recommend giving it a new variable name or something idk
-				// this part should probably be handled transparently by the network deserializer
-				blubs.cdec(cdata)
+			env.serializer.set_encoder("blub", (blub) => {
+				const data = {}
+				data.description = blub.get_description()
+				data.id = blub.get_id()
+				data.position = blub.get_position()
+				data.time = blub.get_time()
+				data.title = blub.get_title()
+				data.user = blub.user
+				data.type = "blub"
+				return [data]
 			})
-			blubs.fetch = (position) => {
-				// env.bubbles.clear()
-				env.network.send("blubs_by_position", position)
-			}
-			blubs.clear = () => {
-			}
+			env.serializer.set_decoder("blub", (data) => {
+				const options = data
+				const blub = create(options)
+				return [blub]
+			})
+			// env.network.receive("comment").tie((socket, comment) => {
+			// 	const local = true
+			// 	blub.comment.call(comment, local)
+			// })
+			blubs.easy_create = easy_create
+			blubs.fetch = fetch
+			blubs.fetch_blubs_by_position = fetch_blubs_by_position
+			blubs.receive = receive
 			return blubs
 		}
+		Blubs.create = create
 	}
+	Blubs.link = link
 }

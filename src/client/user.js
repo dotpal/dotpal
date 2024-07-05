@@ -1,53 +1,37 @@
 const Users = {}
 {
-	// link is for linking an environment, load is for loading maps or game objects or whatever.
-	// but why not just do load instead of link anyways? because the semantics are bad.
-	// it would be like changing multiply not to have a multiplier argument. muliplication ALWAYS has a multiplier, otherwise whats the point?
-	// create is for creating objects, add for adding existing objects, remove for removing, step for stepping, etc.
-	Users.link = (env) => {
+	const link = (env) => {
 		const Signal = env.require("Signal")
-		const Utils = env.require("Utils")
-		Users.create = (...args) => {
+		const create = () => {
 			const users = {}
-			users.fetch = (id) => {
+			const user_from_id = {}
+			const fetch = (user) => {
 				const receive = Signal.create()
-				env.network.fetch("asset", id).tie((cdata) => {
-					const user = users.cdec(cdata)
+				env.network.fetch("user", user).once((user) => {
 					receive.call(user)
 				})
 				return receive
 			}
-			users.get = (id) => {
-				return env.store.get(id)
-			}
-			users.cdec = (cdata) => {
-				const options = cdata
-				const local = true
-				const user = users.create(cdata, local)
-				return user
-			}
-			users.create = (options, local) => {
+			const create = (options, local) => {
 				const user = {}
-				let read = false
-				// this works for now
- 				if (options.id != env.id) {
-					read = true
+				let bio = options.bio || env.error("options missing bio")
+				let email = options.email || env.error("options missing email")
+				let icon = options.icon || env.error("options missing icon")
+				let id = options.id || env.error("options missing id")
+				let name = options.name || env.error("options missing name")
+				let position = options.position || env.error("options missing position")
+				let time = options.time || env.error("options missing time")
+				if (user_from_id[id]) {
+					const user = user_from_id[id]
+					user.adjust(options)
+					return user
 				}
-				user.senc = () => {
-					const sdata = {}
-					sdata.bio = user.bio
-					sdata.email = user.email
-					sdata.icon = user.icon
-					sdata.id = user.id
-					sdata.name = user.name
-					return sdata
+				else {
+					// env.print("create user", id, "with options", options)
+					user_from_id[id] = user
 				}
-				user.adjust = (options) => {
-					Utils.adjust(user, options)
-				}
-				// does view have a fundamental meaning like multiply, step, etc.?
-				// not sure, if it doesnt, maybe we need a new categorization for these types of things.
-				user.view = () => {
+				const view = () => {
+					const read = id != env.user.get_id()
 					const container = document.createElement("div")
 					document.body.appendChild(container)
 					const form = document.createElement("form")
@@ -55,10 +39,10 @@ const Users = {}
 					{
 						const icon = document.createElement("img")
 						icon.className = "icon"
-						icon.src = user.icon
+						icon.src = icon
 						form.appendChild(icon)
 						icon.onclick = () => {
-							user.view()
+							view()
 						}
 					}
 					const name = document.createElement("textarea")
@@ -66,7 +50,7 @@ const Users = {}
 					name.placeholder = "name"
 					name.readOnly = read
 					name.rows = 1
-					name.value = user.name
+					name.value = name
 					form.appendChild(name)
 					form.appendChild(document.createElement("br"))
 					let icon
@@ -75,7 +59,7 @@ const Users = {}
 						icon.cols = 26
 						icon.placeholder = "icon"
 						icon.rows = 1
-						icon.value = user.icon
+						icon.value = icon
 						form.appendChild(icon)
 						form.appendChild(document.createElement("br"))
 					}
@@ -84,7 +68,7 @@ const Users = {}
 					bio.placeholder = "bio"
 					bio.readOnly = read
 					bio.rows = 17
-					bio.value = user.bio
+					bio.value = bio
 					form.appendChild(bio)
 					form.appendChild(document.createElement("br"))
 					if (!read) {
@@ -94,12 +78,10 @@ const Users = {}
 						form.onsubmit = () => {
 							event.preventDefault()
 							container.remove()
-							user.adjust({
-								bio: bio.value,
-								icon: icon.value,
-								name: name.value,
-							})
-							user.send()
+							bio = bio.value
+							icon = icon.value
+							name = name.value
+							adjust({})
 						}
 					}
 					const close = document.createElement("button")
@@ -114,18 +96,75 @@ const Users = {}
 						}
 					}
 				}
-				user.send = () => {
-					const sdata = user.senc()
-					// idk how i feel about this but whatever
-					env.network.fetch("user", sdata).remove()
+				const adjust = (options) => {
+					// env.print("adjust user with options", options)
+					bio = options.bio || bio
+					email = options.email || email
+					icon = options.icon || icon
+					name = options.name || name
+					if (!local) {
+						env.network.send("user", user)
+					}
 				}
-				user.adjust(options)
-				if (!local) {
-					user.send()
+				const get_bio = () => {
+					return bio
 				}
+				const get_email = () => {
+					return email
+				}
+				const get_icon = () => {
+					return icon
+				}
+				const get_name = () => {
+					return name
+				}
+				const get_id = () => {
+					return id
+				}
+				const get_position = () => {
+					return position
+				}
+				const get_time = () => {
+					return time
+				}
+				user.adjust = adjust
+				user.view = view
+				user.get_bio = get_bio
+				user.get_email = get_email
+				user.get_icon = get_icon
+				user.get_id = get_id
+				user.get_name = get_name
+				user.get_position = get_position
+				user.get_time = get_time
+				user.type = "user"
+				// this potentially invokes a replication event
+				adjust({})
 				return user
 			}
+			env.serializer.set_encoder("user", (user) => {
+				// env.print("user encode", user)
+				const data = {}
+				data.bio = user.get_bio()
+				data.email = user.get_email()
+				data.icon = user.get_icon()
+				data.id = user.get_id()
+				data.name = user.get_name()
+				data.position = user.get_position()
+				data.time = user.get_time()
+				data.type = "user"
+				return [data]
+			})
+			env.serializer.set_decoder("user", (data) => {
+				// env.print("user decode", data)
+				const options = data
+				const user = create(options)
+				return [user]
+			})
+			users.create = create
+			users.fetch = fetch
 			return users
 		}
+		Users.create = create
 	}
+	Users.link = link
 }

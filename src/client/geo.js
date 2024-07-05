@@ -7,9 +7,9 @@ const Geo = {}
 	const mod = (x, y) => {
 		return x - floor(x/y)*y
 	}
-	Geo.link = (env) => {
+	const link = (env) => {
 		const State = env.require("State")
-		Geo.create = (...args) => {
+		const create = (...args) => {
 			const geo = {}
 			const pin = document.createElement("img")
 			pin.clasName = "pin"
@@ -17,24 +17,28 @@ const Geo = {}
 			pin.style.position = "fixed"
 			pin.style.transform = "translate(-50%, -100%)"
 			document.body.appendChild(pin)
-			geo.position = State.create(([cx, cy]) => {
+			const position = State.create(([cx, cy]) => {
 				pin.style.left = 100*IP*cy + "vh"
 				pin.style.top = 100*IP*cx + "vh"
 			})
-			geo.request = () => {
+			const request = () => {
 				navigator.geolocation.getCurrentPosition((position) => {
 					const cx = mod(0.5*PI - position.coords.latitude*deg, PI)
 					const cy = mod(PI + position.coords.longitude*deg, 2*PI)
-					geo.position.set([cx, cy])
+					position.set([cx, cy])
 				})
 			}
-			// geo.step = (dt) => {
-			// 	cx += (1 - exp(-4*dt))*(cx- cx)
-			// 	cy += (1 - exp(-4*dt))*(cy - cy)
+			// const step = (dt) => {
+			// 	cx += (1 - exp(-4*dt))*(cx1 - cx)
+			// 	cy += (1 - exp(-4*dt))*(cy1 - cy)
 			// 	pin.style.left = 100*(1 + IP*cy) + "vh"
 			// 	pin.style.top = 100*(0.5 - IP*cx) + "vh"
 			// }
+			geo.position = position
+			geo.request = request
 			return geo
 		}
+		Geo.create = create
 	}
+	Geo.link = link
 }

@@ -1,10 +1,13 @@
 const Login = {}
 {
-	Login.link = (env) => {
+	const link = (env) => {
 		const Signal = env.require("Signal")
-		Login.create = (...args) => {
+		const create = (...args) => {
 			const login = {}
-			login.submit = Signal.create()
+			const submit = Signal.create()
+			const remove = () => {
+				container.remove()
+			}
 			const container = document.createElement("div")
 			document.body.appendChild(container)
 			const form = document.createElement("form")
@@ -25,14 +28,15 @@ const Login = {}
 			form.appendChild(document.createElement("br"))
 			start.textContent = "start"
 			form.appendChild(start)
-			login.remove = () => {
-				container.remove()
-			}
 			form.onsubmit = () => {
 				event.preventDefault()
-				login.submit.call(email.value, password.value)
+				submit.call(email.value, password.value)
 			}
+			login.remove = remove
+			login.submit = submit
 			return login
 		}
+		Login.create = create
 	}
+	Login.link = link
 }

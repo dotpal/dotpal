@@ -1,14 +1,13 @@
 const Netizens = {}
 {
-	Netizens.link = (env) => {
-		Netizens.create = (...args) => {
+	const link = (env) => {
+		const create = (...args) => {
 			const netizens = {}
 			const counter = document.createElement("button")
 			counter.value = "settings"
 			document.body.appendChild(counter)
 			const fetch = () => {
 				env.network.fetch("connections").once((connections) => {
-					env.print("got new connections", connections)
 					if (connections >= 2) {
 						counter.textContent = connections + " people online"
 					}
@@ -23,5 +22,7 @@ const Netizens = {}
 			fetch()
 			return netizens
 		}
+		Netizens.create = create
 	}
+	Netizens.link = link
 }

@@ -3,9 +3,9 @@ const Camera = {}
 	const max = Math.max
 	const min = Math.min
 	const sqrt = Math.sqrt
-	Camera.link = (env) => {
+	const link = (env) => {
 		const Spring = env.require("Spring")
-		Camera.create = (...args) => {
+		const create = (...args) => {
 			const camera = {}
 			let subjects = []
 			const px = Spring.create()
@@ -15,14 +15,12 @@ const Camera = {}
 			let uy
 			let lx
 			let ly
-			/*
-			onclick = () => {
-				if (event.target == env.documentElement) {
-					camera.focus()
-				}
-			}
-			*/
-			camera.focus = (subjects1) => {
+			// onclick = () => {
+			// 	if (event.target == env.documentElement) {
+			// 		focus()
+			// 	}
+			// }
+			const focus = (subjects1) => {
 				if (subjects1) {
 					subjects = subjects1
 				}
@@ -30,10 +28,10 @@ const Camera = {}
 					subjects = []
 				}
 			}
-			camera.get_geometry = () => {
+			const get_geometry = () => {
 				return [px.get_position(), py.get_position(), pz.get_position()]
 			}
-			camera.step = (dt) => {
+			const step = (dt) => {
 				if (subjects.length > 0) {
 					ux = -1/0
 					uy = -1/0
@@ -51,7 +49,12 @@ const Camera = {}
 					pz.set_target(sqrt((ux - lx)*(ux - lx) + (uy - ly)*(uy - ly)))
 				}
 			}
+			camera.focus = focus
+			camera.get_geometry = get_geometry
+			camera.step = step
 			return camera
 		}
+		Camera.create = create
 	}
+	Camera.link = link
 }

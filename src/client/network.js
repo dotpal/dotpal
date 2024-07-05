@@ -1,16 +1,34 @@
 const Network = {}
 {
-	Network.link = (env) => {
+	const link = (env) => {
 		const Hooker = env.require("Hooker")
-		const Serial = env.require("Serial")
 		const Signal = env.require("Signal")
-		Network.create = (address, port) => {
+		const create = (address, port) => {
 			const network = {}
+			const bounces = {}
 			const close = Signal.create()
 			const connect = Signal.create()
 			const hooker = Hooker.create()
-			const receive = hooker.get
 			const host = new WebSocket("wss://" + address + ":" + port)
+			const receive = hooker.get
+			const send = (...args) => {
+				const data = env.serializer.encode(args)
+				host.send(data)
+			}
+			const fetch = (...args) => {
+				const unique = env.get_random()
+				send("fetch", unique, ...args)
+				return receive(unique)
+			}
+			const bounce = (key, callback) => {
+				bounces[key] = callback
+			}
+			network.bounce = bounce
+			network.close = close
+			network.connect = connect
+			network.fetch = fetch
+			network.receive = receive
+			network.send = send
 			host.onclose = () => {
 				close.call(host)
 			}
@@ -21,19 +39,8 @@ const Network = {}
 				connect.call(host)
 			}
 			host.onmessage = () => {
-				hooker.call(...Serial.decode(event.data))
-			}
-			const send = (...args) => {
-				host.send(Serial.encode(args))
-			}
-			network.fetch = (...args) => {
-				const unique = env.get_random()
-				send("fetch", unique, ...args)
-				return receive(unique)
-			}
-			const bounces = {}
-			network.bounce = (key, callback) => {
-				bounces[key] = callback
+				const args = env.serializer.decode(event.data)
+				hooker.call(...args)
 			}
 			receive("fetch").tie((socket, unique, key, ...args) => {
 				if (!bounces[key]) {
@@ -42,11 +49,9 @@ const Network = {}
 				}
 				send_to(socket, unique, bounces[key](socket, ...args))
 			})
-			network.close = close
-			network.connect = connect
-			network.receive = receive
-			network.send = send
 			return network
 		}
+		Network.create = create
 	}
+	Network.link = link
 }

@@ -1,15 +1,15 @@
 const Network = {}
 {
-	Network.link = (env) => {
+	const link = (env) => {
 		const Hooker = env.require("Hooker")
-		const Serial = env.require("Serial")
 		const Signal = env.require("Signal")
-		Network.create = (address, port) => {
+		const create = (address, port) => {
 			const network = {}
-			const sockets = []
-			const hooker = Hooker.create()
+			const bounces = {}
 			const connect = Signal.create()
+			const hooker = Hooker.create()
 			const receive = hooker.get
+			const sockets = []
 			let connections = 0
 			const host = Bun.serve({
 				hostname: address,
@@ -24,7 +24,7 @@ const Network = {}
 				},
 				websocket: {
 					message(socket, data) {
-						const args = Serial.decode(data)
+						const args = env.serializer.decode(data)
 						args.splice(1, 0, socket)
 						hooker.call(...args)
 					},
@@ -43,32 +43,34 @@ const Network = {}
 				},
 			})
 			const send_to = (socket, ...args) => {
-				socket.send(Serial.encode(args))
+				const data = env.serializer.encode(args)
+				socket.send(data)
 			}
-			network.send = (...args) => {
+			const send = (...args) => {
+				const data = env.serializer.encode(args)
 				for (const i in sockets) {
 					const socket = sockets[i]
-					send_to(socket, ...args)
+					socket.send(data)
 				}
 			}
-			network.send_but = (ignore, ...args) => {
+			const send_but = (ignore, ...args) => {
+				const data = env.serializer.encode(args)
 				for (const i in sockets) {
 					const socket = sockets[i]
 					if (socket != ignore) {
-						send_to(socket, ...args)
+						socket.send(data)
 					}
 				}
 			}
-			network.close = () => {
+			const close = () => {
 				host.stop()
 			}
-			network.fetch = (socket, ...args) => {
+			const fetch = (socket, ...args) => {
 				const unique = env.get_random()
 				send_to(socket, "fetch", unique, ...args)
 				return receive(unique)
 			}
-			const bounces = {}
-			network.bounce = (key, callback) => {
+			const bounce = (key, callback) => {
 				bounces[key] = callback
 			}
 			receive("fetch").tie((socket, unique, key, ...args) => {
@@ -78,12 +80,19 @@ const Network = {}
 				}
 				send_to(socket, unique, bounces[key](socket, ...args))
 			})
-			network.send_to = send_to
-			network.receive = receive
-			network.bounce("connections", () => {
+			bounce("connections", () => {
 				return connections
 			})
+			network.bounce = bounce
+			network.close = close
+			network.fetch = fetch
+			network.receive = receive
+			network.send = send
+			network.send_but = send_but
+			network.send_to = send_to
 			return network
 		}
+		Network.create = create
 	}
+	Network.link = link
 }

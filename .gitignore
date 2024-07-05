@@ -1,3 +1,5 @@
 build/
 bun.lockb
+server/cert.pem
+server/key.pem
 store.json

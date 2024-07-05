@@ -55,8 +55,8 @@ for (const i in folders) {
 	}
 }
 for (const name in files) {
-	if (name != "Main") {
+	if (name != "Env") {
 		console.log(files[name])
 	}
 }
-console.log(files["Main"])
+console.log(files["Env"])

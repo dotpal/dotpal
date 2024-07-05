@@ -4,8 +4,8 @@ const Spring = {}
 	const sin = Math.sin
 	const exp = Math.exp
 	const sqrt = Math.sqrt
-	Spring.link = (env) => {
-		Spring.create = (...args) => {
+	const link = (env) => {
+		const create = (...args) => {
 			const spring = {}
 			let t = env.get_time()
 			let p = env.get_random()
@@ -15,23 +15,23 @@ const Spring = {}
 			let d = 0.7
 			const update = () => {
 				const t1 = env.get_time()
-				const [p1, v1] = spring.evaluate(t1 - t)
+				const [p1, v1] = evaluate(t1 - t)
 				p = p1
 				v = v1
 				t = t1
 			}
-			spring.get_position = () => {
+			const get_position = () => {
 				update()
 				return p
 			}
-			spring.set_target = (b1) => {
+			const set_target = (b1) => {
 				update()
 				b = b1
 			}
-			spring.step = (dt) => {
+			const step = (dt) => {
 				update()
 			}
-			spring.evaluate = (t) => {
+			const evaluate = (t) => {
 				const h = sqrt(1 - d*d)
 				// not really correct but whatever
 				const x = t*h*k
@@ -43,7 +43,13 @@ const Spring = {}
 				// assuming k > 0 && d < 1
 				return [b + (k*(p - b)*(c + d*s) + v*s)/(k*y), (k*(b - p)*s + v*(c - d*s))/y]
 			}
+			spring.get_position = get_position
+			spring.set_target = set_target
+			spring.step = step
+			spring.update = update
 			return spring
 		}
+		Spring.create = create
 	}
+	Spring.link = link
 }

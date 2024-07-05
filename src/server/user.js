@@ -1,78 +1,124 @@
 const Users = {}
 {
-	Users.link = (env) => {
+	const link = (env) => {
 		const Utils = env.require("Utils")
-		Users.create = () => {
+		const create = () => {
 			const users = {}
-			users.create = (options, read) => {
-				let asset
+			const user_from_id = {}
+			const create = (options) => {
 				const user = {}
-				user.cenc = () => {
-					const cdata = {}
-					cdata.bio = user.bio
-					cdata.email = user.email
-					cdata.icon = user.icon
-					cdata.id = user.id
-					cdata.name = user.name
-					return cdata
-				}
-				user.adjust = (options) => {
-					Utils.adjust(asset, options)
-					Utils.adjust(user, options)
-				}
-				const id = options.id
-				if (read) {
-					asset = env.store.get(id)
-					const options = asset
-					Utils.adjust(user, options)
+				let bio = options.bio || "Hello world"
+				let email = options.email || env.error("options missing email")
+				let icon = options.icon || "https://qph.cf2.quoracdn.net/main-qimg-407c4b6f60302d6e9c55695adef129e0-pjlq"
+				let id = options.id || env.error("options missing id")
+				let name = options.name || "Billy Joel"
+				let position = options.position || [0.970713, 5.45788891708]
+				let time = options.time || env.get_time()
+				if (user_from_id[id]) {
+					const user = user_from_id[id]
+					user.adjust(options)
+					return user
 				}
 				else {
-					asset = env.store.add("user", id)
-					user.adjust(options)
+					env.print("create user", id, "with options", options)
+					user_from_id[id] = user
 				}
+				let asset = env.store.get(id)
+				if (asset) {
+					bio = asset.bio || env.error("asset missing bio")
+					email = asset.email || env.error("asset missing email")
+					icon = asset.icon || env.error("asset missing icon")
+					id = asset.id || env.error("asset missing id")
+					name = asset.name || env.error("asset missing name")
+					position = asset.position || env.error("asset missing position")
+					time = asset.time || env.error("asset missing time")
+				}
+				else {
+					asset = env.store.create(id)
+					asset.bio = bio
+					asset.email = email
+					asset.icon = icon
+					asset.id = id
+					asset.name = name
+					asset.position = position
+					asset.time = time
+					asset.type = "user"
+				}
+				const adjust = (options) => {
+					bio = options.bio || bio
+					email = options.email || email
+					icon = options.icon || icon
+					name = options.name || name
+					asset.bio = bio
+					asset.email = email
+					asset.icon = icon
+					asset.name = name
+				}
+				const get_bio = () => {
+					return bio
+				}
+				const get_email = () => {
+					return email
+				}
+				const get_icon = () => {
+					return icon
+				}
+				const get_name = () => {
+					return name
+				}
+				const get_id = () => {
+					return id
+				}
+				const get_position = () => {
+					return position
+				}
+				const get_time = () => {
+					return time
+				}
+				user.adjust = adjust
+				user.get_bio = get_bio
+				user.get_email = get_email
+				user.get_icon = get_icon
+				user.get_id = get_id
+				user.get_name = get_name
+				user.get_position = get_position
+				user.get_time = get_time
+				user.type = "user"
 				return user
 			}
-			users.get = (id) => {
-				const asset = env.store.get(id)
-				// if we dont write then we dont need to copy i think
-				// options and asset are the same in this context
-				const options = Utils.get_copy(asset)
-				// dont make a new user, just read
-				const read = true
-				const user = users.create(options, read)
-				return user
+			// this could be in the user object instead
+			const exists = (user) => {
+				return env.store.get(user.get_id()) != undefined
 			}
-			users.exists = (id) => {
-				// we should have env.store.exists or something
-				return env.store.get(id) != undefined
-			}
-			users.sdec = (sdata) => {
-			}
-			env.network.bounce("user", (socket, sdata) => {
-				// the idea of exists is different than the idea of get
-				const id = sdata.id
-				if (users.exists(id)) {
-					// edit request
-					const user = users.get(id)
-					user.adjust({
-						bio: sdata.bio,
-						email: sdata.email,
-						icon: sdata.icon,
-						name: sdata.name,
-					})
-					return [user.cenc()]
-				}
-				// user create request
-				const user = users.create({
-					bio: "Hello world!",
-					email: sdata.email,
-					icon: "https://qph.cf2.quoracdn.net/main-qimg-407c4b6f60302d6e9c55695adef129e0-pjlq",
-					id: id,
-					name: "Noobie",
-				})
-				return [user.cenc()]
+			env.serializer.set_encoder("user", (user) => {
+				const data = {}
+				data.bio = user.get_bio()
+				data.email = user.get_email()
+				data.icon = user.get_icon()
+				data.id = user.get_id()
+				data.name = user.get_name()
+				data.position = user.get_position()
+				data.time = user.get_time()
+				data.type = "user"
+				return [data]
 			})
+			env.serializer.set_decoder("user", (data) => {
+				const options = data
+				env.print("decode", options)
+				const user = create(options)
+				return [user]
+			})
+			env.network.bounce("user", (socket, user) => {
+				return [user]
+			})
+			env.network.receive("user").tie((socket, user) => {
+				create(user)
+			})
+			users.create = create
+			users.exists = exists
 			return users
 		}
+		Users.create = create
 	}
+	Users.link = link
 }

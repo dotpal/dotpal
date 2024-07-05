@@ -1,34 +1,40 @@
 const State = {}
 {
-	State.link = (env) => {
+	const link = (env) => {
 		const Signal = env.require("Signal")
-		State.create = (setter, getter) => {
+		const create = (setter, getter) => {
+			const state = {}
 			// hopefully nobody initializes their data with this
 			let args = "jumbojetpussyfucker123"
-			const state = {}
 			let changer = () => {}
-			state.change = (changer1) => {
+			const change = (changer1) => {
 				changer = changer1
 			}
-			const set = Signal.create()
-			set.tie((args1) => {
+			const pooper = Signal.create()
+			const set = pooper.call
+			pooper.tie((args1) => {
 				if (args1 != args) {
 					changer(args1)
 				}
 				args = args1
 				setter(args1)
 			})
-			state.set = set.call
-			state.tie = set.tie
-			state.get = () => {
+			const get = () => {
 				return args
 			}
 			if (getter) {
-				state.check = () => {
-					state.set(getter())
+				const check = () => {
+					set(getter())
 				}
+				state.check = check
 			}
+			state.change = change
+			state.get = get
+			state.set = set
+			state.tie = pooper.tie
 			return state
 		}
+		State.create = create
 	}
+	State.link = link
 }

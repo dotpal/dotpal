@@ -6,13 +6,15 @@ const Random = {}
 	Random.create = (v) => {
 		const random = {}
 		v = v || 0
-		random.get = () => {
+		const get = () => {
 			v = (ca*v + cc)%cm
 			return v/cm
 		}
-		random.set = (v1) => {
+		const set = (v1) => {
 			v = v1
 		}
+		random.get = get
+		random.set = set
 		return random
 	}
 }

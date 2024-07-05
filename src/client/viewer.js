@@ -1,14 +1,12 @@
 const Viewer = {}
 {
-	Viewer.link = (env) => {
-		Viewer.create = (blub) => {
+	const link = (env) => {
+		const Utils = env.require("Utils")
+		const create = (blub) => {
 			const remove = () => {
 				container.remove()
 			}
-			let read = true
-			if (!blub) {
-				read = false
-			}
+			let read = blub != undefined
 			const container = document.createElement("div")
 			document.body.appendChild(container)
 			const form = document.createElement("form")
@@ -16,7 +14,7 @@ const Viewer = {}
 			if (read) {
 				const icon = document.createElement("img")
 				icon.className = "icon"
-				icon.src = blub.user.icon
+				icon.src = blub.user.get_icon()
 				form.appendChild(icon)
 				icon.onclick = () => {
 					blub.user.view()
@@ -35,12 +33,12 @@ const Viewer = {}
 			description.placeholder = "description"
 			description.readOnly = read
 			description.required = true
-			description.rows = 20
+			description.rows = 15
 			form.appendChild(description)
 			form.appendChild(document.createElement("br"))
 			if (blub) {
-				title.value = blub.title
-				description.value = blub.description
+				title.value = blub.get_title()
+				description.value = blub.get_description()
 			}
 			const close = document.createElement("button")
 			close.textContent = "close"
@@ -64,24 +62,32 @@ const Viewer = {}
 				}
 			}
 			else {
-				/*
-				const comments = document.createElement("form")
-				container.appendChild(comments)
-				const comment = document.createElement("p")
-				comment.textContent = "comment"
-				comments.appendChild(comment)
-				*/
 				const reply = document.createElement("button")
 				reply.textContent = "reply"
 				reply.onclick = () => {
 					event.preventDefault()
-					// class functions should affect state, but this does affect state, therefore its wrong maybe
-					// maybe instead it should be like viewer.create or something idk
-					// Viewer.create(undefined, blub.id)
-					env.viewer.open()
+					// blub.comment.call(env.user, Utils.get_date(env.get_time()))
 				}
 				form.appendChild(reply)
+				const time = document.createElement("textarea")
+				time.textContent = Utils.get_date(blub.get_time())
+				form.appendChild(time)
+				const comment = (text) => {
+					const comment_form = document.createElement("form")
+					Utils.insert_after(form, comment_form)
+					const description = document.createElement("textarea")
+					description.cols = 26
+					description.placeholder = "description"
+					description.readOnly = read
+					description.required = true
+					description.rows = 10
+					description.textContent = text
+					comment_form.appendChild(description)
+				}
+				// blub.comment.tie(comment)
 			}
 		}
+		Viewer.create = create
 	}
+	Viewer.link = link
 }
