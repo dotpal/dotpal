@@ -86,12 +86,12 @@ const Blubs = {}
 				data.title = blub.get_title()
 				data.user = blub.user
 				data.type = "blub"
-				return [data]
+				return data
 			})
 			env.serializer.set_decoder("blub", (data) => {
 				const options = data
 				const blub = create(options)
-				return [blub]
+				return blub
 			})
 			env.network.bounce("blubs_by_position", (socket, position) => {
 				const blubs = []

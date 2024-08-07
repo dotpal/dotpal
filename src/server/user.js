@@ -100,13 +100,13 @@ const Users = {}
 				data.position = user.get_position()
 				data.time = user.get_time()
 				data.type = "user"
-				return [data]
+				return data
 			})
 			env.serializer.set_decoder("user", (data) => {
 				const options = data
 				env.print("decode", options)
 				const user = create(options)
-				return [user]
+				return user
 			})
 			env.network.bounce("user", (socket, user) => {
 				return [user]

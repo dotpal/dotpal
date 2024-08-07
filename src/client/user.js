@@ -152,13 +152,13 @@ const Users = {}
 				data.position = user.get_position()
 				data.time = user.get_time()
 				data.type = "user"
-				return [data]
+				return data
 			})
 			env.serializer.set_decoder("user", (data) => {
 				// env.print("user decode", data)
 				const options = data
 				const user = create(options)
-				return [user]
+				return user
 			})
 			users.create = create
 			users.fetch = fetch

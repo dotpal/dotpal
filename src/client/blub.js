@@ -56,7 +56,6 @@ const Blubs = {}
 				// 		env.network.send("comment", comment)
 				// 	}
 				// })
-				receive.call(blub)
 				blub.adjust = adjust
 				// blub.comment = comment
 				blub.get_description = get_description
@@ -66,6 +65,7 @@ const Blubs = {}
 				blub.get_title = get_title
 				blub.user = user
 				blub.type = "blub"
+				receive.call(blub)
 				return blub
 			}
 			const easy_create = (title, description) => {
@@ -91,12 +91,12 @@ const Blubs = {}
 				data.title = blub.get_title()
 				data.user = blub.user
 				data.type = "blub"
-				return [data]
+				return data
 			})
 			env.serializer.set_decoder("blub", (data) => {
 				const options = data
 				const blub = create(options)
-				return [blub]
+				return blub
 			})
 			// env.network.receive("comment").tie((socket, comment) => {
 			// 	const local = true

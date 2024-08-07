@@ -85,10 +85,12 @@ const Bubbles = {}
 					sprite.remove()
 					all.splice(all.indexOf(bubble), 1)
 				}
+				bubble.blub = blub
 				bubble.get_geometry = get_geometry
 				bubble.remove = remove
 				bubble.set_radius = set_radius
 				bubble.set_target = set_target
+				bubble.step = step
 				bubble.view = view
 				return bubble
 			}

@@ -13,7 +13,9 @@ const Serializer = {}
 			const set_decoder = (key, callback) => {
 				decoders[key] = callback
 			}
-			const get_descending_typed = (stack) => {
+			const get_descending_typed = (top) => {
+				const parent = [top]
+				const stack = [[parent, 0]]
 				const descending_typed = []
 				while (stack.length > 0) {
 					const [parent, i] = stack.pop()
@@ -27,59 +29,37 @@ const Serializer = {}
 						}
 					}
 				}
-				// for (let i = 0; i < descending_typed.length; ++i) {
-				// 	const [parent, j] = descending_typed[i]
-				// 	env.print(parent[j])
-				// }
 				return descending_typed
 			}
 			const decode = (data) => {
 				const args = parse(data)
-				// env.print("in decode", args)
-				const parent = [args]
-				const stack = [[parent, 0]]
-				const descending_typed = get_descending_typed(stack)
-				// if (descending_typed[0]) {
-				// 	descending_typed[0][0][descending_typed[0][1]][0] = "xd"
-				// }
+				const descending_typed = get_descending_typed(args)
 				while (descending_typed.length > 0) {
 					const [parent, i] = descending_typed.pop()
 					const current = parent[i]
 					const decoder = decoders[current.type]
 					if (decoder) {
-						// env.print("decoder", current)
 						parent[i] = decoder(current)
-						// env.print("decode", current.type)
 					}
 					else {
 						env.error("missing decoder", current.type)
 					}
 				}
-				// env.print("out decode", args)
 				return args
 			}
 			const encode = (args) => {
-				// env.print("in encode", args)
-				const parent = [args]
-				const stack = [[parent, 0]]
-				const descending_typed = get_descending_typed(stack)
-				// for (let i = 0; i < descending_typed.length; ++i) {
-				// 	env.print("dtyped", descending_typed[i])
-				// }
+				const descending_typed = get_descending_typed(args)
 				while (descending_typed.length > 0) {
 					const [parent, i] = descending_typed.pop()
 					const current = parent[i]
 					const encoder = encoders[current.type]
 					if (encoder) {
-						// env.print("encoder", current)
 						parent[i] = encoder(current)
-						// env.print("encode", current.type)
 					}
 					else {
 						env.error("missing encoder", current.type)
 					}
 				}
-				// env.print("encode", args)
 				const data = stringify(args)
 				return data
 			}

@@ -207,7 +207,7 @@ const Env = {}
 	env.store = store
 	const random = Random.create()
 	env.get_random = random.get
-	const network = Network.create("dotp.al", 443)
+	const network = Network.create("localhost", 8000)
 	env.network = network
 	const geo = Geo.create()
 	const get_position = () => {
@@ -257,7 +257,7 @@ const Env = {}
 						viewer.open()
 					})
 					env.create_button("profile", () => {
-						env.print(user)
+						env.print("print the user:", user)
 						user.view()
 					})
 				})

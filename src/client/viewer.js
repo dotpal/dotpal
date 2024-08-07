@@ -14,6 +14,7 @@ const Viewer = {}
 			if (read) {
 				const icon = document.createElement("img")
 				icon.className = "icon"
+				env.print(blub.user)
 				icon.src = blub.user.get_icon()
 				form.appendChild(icon)
 				icon.onclick = () => {
