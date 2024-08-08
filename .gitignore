@@ -1,5 +1,7 @@
 build/
-bun.lockb
-server/cert.pem
-server/key.pem
+src/client/**/*.js
+src/server/**/*.js
+src/server/cert.pem
+src/server/key.pem
+src/shared/**/*.js
 store.json

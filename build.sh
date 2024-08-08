@@ -4,4 +4,4 @@ bun include.js src/client/ > build/index.html
 printf '"use strict"\n' > build/dotpal.js
 bun include.js src/server/ >> build/dotpal.js
 # remove the client
-rm build/index.html
+# rm build/index.html
