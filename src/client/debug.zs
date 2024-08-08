@@ -5,6 +5,33 @@ Debug = {}
 	trace = console.trace
 	authorical = true
 	visual = false
+	NL = String.fromCharCode(10)
+	{
+		originalConsoleError = console.error
+		console.error = function(...args) {
+			error = args.find(arg => arg instanceof Error)
+			if (error) {
+				stackLines = error.stack.split(NL)
+				functionLine = stackLines[1] or ""
+				functionNameMatch = functionLine.match(/at (.+?) /)
+				functionName = functionNameMatch ? functionNameMatch[1] : "unknown function"
+				modifiedArgs = [`Error in function "${functionName}":`, ...args]
+				originalConsoleError.apply(console, modifiedArgs)
+			}
+			else {
+				originalConsoleError.apply(console, args)
+			}
+		}
+		exampleFunction = function() {
+			throw new Error("Something went wrong!")
+		}
+		try {
+			exampleFunction()
+		}
+		catch (e) {
+			console.error(e)
+		}
+	}
 	create = function() {
 		debug = {}
 		draw = function(...args) {
@@ -29,7 +56,6 @@ Debug = {}
 				// trace(message)
 			}
 		}
-
 		whine = function(...args) {
 			// error(...args)
 			// if visual {
